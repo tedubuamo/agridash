@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agri‑Dash – Rekomendasi Komoditas & Ketahanan Pangan</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root { --brand:#1f6b3a; --brand-700:#155b2f; }
+        html, body { height: 100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+        * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+        *::-webkit-scrollbar { height: 8px; width: 8px; }
+        *::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:9999px; }
+        .sidebar-active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-[var(--brand)]/95 min-h-full">
+<div class="min-h-screen grid grid-cols-12 gap-0">
+    <!-- Sidebar -->
+    <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
+        <div class="flex items-center gap-">
+        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="/assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
+        </div>
+
+        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="/assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
+        </div>
+        </div>
+        <nav class="mt-4 flex-1">
+            <ul class="space-y-2 text-base">
+                <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/index.html">🏠 <span>Home</span></a></li>
+                <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/maps.html">🗺️ <span>Maps Kecamatan</span></a></li>
+                <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/prediksi.html">📈 <span>Prediksi</span></a></li>
+                <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/pemetaan.html">🧭 <span>Pemetaan</span></a></li>
+                <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/rekomendasi.html">✅ <span>Rekomendasi</span></a></li>
+                <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/ketahanan.html">🛡️ <span>Ketahanan Pangan</span></a></li>
+            </ul>
+        </nav>
+        <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
+    </aside>
+
+    <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-[var(--brand)] p-4 rounded-xl">
+        <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-sm">
+        Dashboard Rekomendasi Komoditas dan Ketahanan Pangan Daerah - AgriDash
+        </h1>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6 w-full">
+        <div class="w-full md:w-1/2">
+            <label class="block mb-1 text-sm font-semibold text-[var(--brand-700)]">Pilih Musim</label>
+            <select id="musimSelect" class="border border-slate-300 rounded-lg px-2 py-1 text-sm w-full">
+                <option value="kemarau" selected> Kemarau</option>
+                <option value="hujan"> Hujan</option>
+            </select>
+        </div>
+
+        <div class="w-full md:w-1/2 flex flex-wrap gap-2 items-center text-sm">
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-green-700 inline-block"></span> Tomat
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-yellow-400 inline-block"></span> Melon
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-green-500 inline-block"></span> Semangka
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-blue-200 inline-block"></span> Kubis
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-orange-600 inline-block"></span> Kentang
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-red-500 inline-block"></span> Cabai Rawit
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-green-900 inline-block"></span> Kacang Panjang
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-yellow-500 inline-block"></span> Cabai Besar
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-teal-600 inline-block"></span> Bawang Merah
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl shadow p-4">
+        <h2 class="font-bold text-lg text-center text-[var(--brand)]">Rekomendasi Tanaman Pangan (%)</h2>
+            <div class="overflow-x-auto">
+                <table id="tabelPangan" class="min-w-full text-sm border border-gray-200">
+                <thead class="bg-[var(--brand)] text-white">
+                    <tr>
+                    <th class="px-3 py-1 text-left">Kecamatan</th>
+                    <th class="px-3 py-1 text-center">Jagung</th>
+                    <th class="px-3 py-1 text-center">Ketela Pohon</th>
+                    <th class="px-3 py-1 text-center">Padi</th>
+                    </tr>
+                </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-4">
+            <h2 class="font-bold text-lg  text-center text-[var(--brand)]">Rekomendasi Tanaman Hortikultura (%)</h2>
+            <canvas id="chartHorti" width="750" height="700"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-4 text-sm text-gray-700 leading-relaxed">
+        <p>
+        <b>Rekomendasi tanaman pangan dan hortikultura</b> menggunakan <b>model DNN</b> (Sequential dengan Dropout) menunjukkan kinerja baik,
+        dengan <b>akurasi 81%</b>, <b>precision 83%</b>, dan <b>recall 83%</b> untuk <i>tanaman pangan</i>,
+        serta <b>akurasi 96%</b>, <b>precision 96%</b>, dan <b>recall 96%</b> untuk <i>tanaman hortikultura</i>.
+        </p>
+    </div>
+    </main>
+
+    <script>
+        async function loadTabelPangan(musim = "Kemarau") {
+            try {
+                const res = await fetch(`http://127.0.0.1:8000/api/recommend/tanpang/${musim}`);
+                const json = await res.json();
+                const dataPangan = json.data;
+
+                const tbody = document.querySelector("#tabelPangan tbody");
+                tbody.innerHTML = ""; // clear previous rows
+
+                dataPangan.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td class="px-3 py-1 border">${row.kec}</td>
+                    <td class="px-3 py-1 border text-center ${getColor(row.jagung)}">${row.jagung.toFixed(2)}%</td>
+                    <td class="px-3 py-1 border text-center ${getColor(row.ketela)}">${row.ketela.toFixed(2)}%</td>
+                    <td class="px-3 py-1 border text-center ${getColor(row.padi)}">${row.padi.toFixed(2)}%</td>
+                `;
+                tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Gagal memuat data pangan:", err);
+            }
+        }
+
+        function getColor(value) {
+            if (value >= 70) return "bg-green-600 text-white";
+            if (value >= 50) return "bg-green-400 text-white";
+            if (value >= 30) return "bg-yellow-400";
+            if (value > 0) return "bg-yellow-200";
+            return "bg-gray-100";
+        }
+
+        loadTabelPangan("Kemarau");
+
+        document.getElementById("musimSelect").addEventListener("change", e => {
+            loadTabelPangan(e.target.value);
+        });
+
+        async function loadChartHorti(musim = "Kemarau") {
+        try {
+            const res = await fetch(`http://127.0.0.1:8000/api/recommend/horti/${musim}`);
+            const json = await res.json();
+
+            const ctxHorti = document.getElementById("chartHorti").getContext("2d");
+
+            if (window.chartHorti && typeof window.chartHorti.destroy === "function") {
+            window.chartHorti.destroy();
+            }
+
+            // 🔹 Warna berdasarkan komoditas
+            const colorMap = {
+            "Tomat": "#4CAF50",
+            "Melon": "#FFEB3B",
+            "Semangka": "#388E3C",
+            "Kubis": "#81D4FA",
+            "Kentang": "#8D6E63",
+            "Cabai Rawit": "#E53935",
+            "Kacang Panjang": "#1B5E20",
+            "Cabai Besar": "#FBC02D",
+            "Bawang Merah": "#80CBC4"
+            };
+
+            window.chartHorti = new Chart(ctxHorti, {
+            type: "bar",
+            data: {
+                labels: json.labels,
+                datasets: json.datasets.map(ds => ({
+                label: ds.label,
+                data: ds.data,
+                backgroundColor: colorMap[ds.label] || "#ccc"
+                }))
+            },
+            options: {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                legend: {
+                    display: false,
+                    position: "bottom",
+                    labels: {
+                    boxWidth: 12,
+                    padding: 10
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                    label: ctx => `${ctx.dataset.label}: ${ctx.raw}%`
+                    }
+                }
+                },
+                scales: {
+                x: {
+                    stacked: true,
+                    title: { display: true, text: "Persentase" },
+                    ticks: { callback: v => v + "%" },
+                    max: 100
+                },
+                y: {
+                    stacked: true,
+                    title: { display: true, text: "Kecamatan" }
+                }
+                },
+                elements: {
+                bar: {
+                    barThickness: 20,
+                    borderRadius: 0
+                }
+                },
+                categoryPercentage: 0.8,
+                barPercentage: 0.9
+            }
+            });
+        } catch (err) {
+            console.error("Gagal memuat grafik hortikultura:", err);
+        }
+        }
+
+        // ✅ Load default musim
+        loadChartHorti("Kemarau");
+
+        document.getElementById("musimSelect").addEventListener("change", e => {
+        loadChartHorti(e.target.value);
+        });
+    </script>
+</body>
+</html>

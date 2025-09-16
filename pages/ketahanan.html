@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agri-Dash – Rekomendasi Komoditas & Ketahanan Pangan</title>
+  
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ChartJS & Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+  <!-- Leaflet -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root { --brand:#1f6b3a; --brand-700:#155b2f; }
+    html, body { height: 100%; font-family: 'Inter', sans-serif; }
+    * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+    *::-webkit-scrollbar { height: 8px; width: 8px; }
+    *::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:9999px; }
+    .sidebar-active { background-color: rgba(255, 255, 255, 0.2); }
+    .chart-pangan { width: 900px; margin: 20px auto; }
+    .legend { line-height: 18px; color: #555; background: white; padding: 6px 8px;
+              box-shadow: 0 0 6px rgba(0,0,0,0.2); border-radius: 8px; font-size: 12px; }
+    .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.8; }
+  </style>
+</head>
+
+<body class="bg-[var(--brand)]/95 min-h-full">
+<div class="min-h-screen grid grid-cols-12 gap-0">
+  
+  <!-- Sidebar -->
+  <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="/assets/logo_pens.png" alt="Logo" class="w-full h-full object-cover">
+      </div>
+      <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="/assets/Kabupaten_Blitar.jpeg" alt="Kabupaten Blitar" class="w-full h-full object-cover">
+      </div>
+    </div>
+
+    <nav class="mt-4 flex-1">
+      <ul class="space-y-2 text-base">
+        <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 transition" href="/index.html">🏠 <span>Home</span></a></li>
+        <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 transition" href="/pages/maps.html">🗺️ <span>Maps Kecamatan</span></a></li>
+        <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 transition" href="/pages/prediksi.html">📈 <span>Prediksi</span></a></li>
+        <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 transition" href="/pages/pemetaan.html">🧭 <span>Pemetaan</span></a></li>
+        <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 transition" href="/pages/pemetaan.html">✅ <span>Rekomendasi</span></a></li>
+        <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 transition" href="/pages/ketahanan.html">🛡️ <span>Ketahanan Pangan</span></a></li>
+      </ul>
+    </nav>
+    <p class="text-white/70 text-center text-sm">© Agri-Dash</p>
+  </aside>
+
+  <!-- Main -->
+  <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4 overflow-x-auto">
+    
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-[var(--brand)] p-4 rounded-xl">
+      <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight">
+        Dashboard Rekomendasi Komoditas dan Ketahanan Pangan Daerah - AgriDash
+      </h1>
+    </div>
+
+    <!-- Peta Distribusi & Bar Chart -->
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 md:col-span-6 bg-white rounded-xl border p-4">
+        <div class="flex justify-between items-center mb-2">
+          <!-- Legend -->
+          <div class="flex gap-3 text-xs">
+            <div class="flex items-center gap-1"><span class="w-3 h-3 bg-yellow-300"></span> 4 - Agak Tahan</div>
+            <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-500"></span> 5 - Tahan</div>
+            <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-700"></span> 6 - Sangat Tahan</div>
+          </div>
+          <!-- Dropdown Tahun -->
+          <select id="tahunSelect" class="border border-slate-300 rounded px-2 py-1 text-sm">
+            <option value="2018" selected>2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2022">2023</option>
+            <option value="2022">2024</option>
+            <option value="2022">2025</option>
+          </select>
+        </div>
+        <h2 class="text-center font-bold text-emerald-800">Peta Distribusi Kelompok IKP Jawa Timur</h2>
+        <div id="mapIKP" class="h-[350px] mt-2"></div>
+      </div>
+
+      <div class="col-span-12 md:col-span-6 bg-white rounded-xl border p-4">
+        <div class="flex gap-2 mb-2">
+          <button id="sortAsc" class="px-2 py-1 bg-emerald-600 text-white rounded text-xs">Urutkan Naik</button>
+          <button id="sortDesc" class="px-2 py-1 bg-emerald-600 text-white rounded text-xs">Urutkan Turun</button>
+        </div>
+
+        <h2 class="text-center font-bold text-emerald-800">Indeks Ketahanan Pangan Jawa Timur</h2>
+        <canvas id="barChartIKP" class="h-[350px]"></canvas>
+      </div>
+    </div>
+
+    <!-- Line Chart & Boxplot -->
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 md:col-span-6 bg-white rounded-xl border p-4">
+        <h2 class="text-center font-bold text-emerald-800">Indeks Ketahanan Pangan Kabupaten Blitar</h2>
+        <canvas id="lineChartKab" class="h-[250px]"></canvas>
+      </div>
+
+      <div class="col-span-12 md:col-span-6 bg-white rounded-xl border p-4">
+        <h2 class="text-center font-bold text-emerald-800">Indeks Ketahanan Pangan Provinsi Jawa Timur</h2>
+        <div id="boxPlot" class="h-[350px]"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="bg-white rounded-xl border p-4 text-sm">
+      <p>
+        Prediksi <b>klasifikasi ketahanan pangan</b> menggunakan 
+        <b>Random Forest Classifier</b> dengan teknik <b>Random Oversampling</b> 
+        menghasilkan <b>akurasi 93%</b>, <b>precision 95%</b>, dan <b>recall 93%</b>.
+      </p>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctxBlitar = document.getElementById('lineChartKab').getContext('2d');
+
+  fetch('http://127.0.0.1:8000/api/food/line')
+    .then(response => response.json())
+    .then(data => {
+      new Chart(ctxBlitar, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: 'IKP Blitar',
+            data: data.data,
+            borderColor: '#1f6b3a',
+            backgroundColor: 'rgba(31,107,58,0.2)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointBackgroundColor: '#1f6b3a'
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              suggestedMin: 75,
+              suggestedMax: 85,
+              title: {
+                display: true,
+                text: 'Indeks Ketahanan Pangan',
+                color: '#1f6b3a'
+              },
+              ticks: {
+                color: '#1f6b3a'
+              }
+            },
+            x: {
+              ticks: {
+                color: '#1f6b3a'
+              }
+            }
+          }
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Gagal memuat data FSI Blitar:', error);
+    });
+</script>
+
+<script>
+  const ctxBar = document.getElementById('barChartIKP').getContext('2d');
+  const tahun = document.getElementById('tahunSelect');
+  const sortAscBtn = document.getElementById('sortAsc');
+  const sortDescBtn = document.getElementById('sortDesc');
+
+  let barChart;
+  let chartData = { labels: [], data: [] };
+
+  function drawBarChart(tahun) {
+    fetch(`http://127.0.0.1:8000/api/food/bar/${tahun}`)
+      .then(response => response.json())
+      .then(data => {
+        chartData = data;
+        renderChart(chartData.labels, chartData.data, tahun);
+      })
+      .catch(error => console.error('Gagal memuat data bar chart:', error));
+  }
+
+  function renderChart(labels, values, tahun) {
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+
+    const avgLine = {
+      id: 'avgLine',
+      beforeDraw: chart => {
+        const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
+        ctx.save();
+        ctx.strokeStyle = 'red';
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(x.getPixelForValue(avg), top);
+        ctx.lineTo(x.getPixelForValue(avg), bottom);
+        ctx.stroke();
+        ctx.restore();
+      }
+    };
+
+    if (barChart) barChart.destroy();
+
+    barChart = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: `IKP ${tahun}`,
+          data: values,
+          backgroundColor: '#1f6b3a',
+          barPercentage: 0.5,       // Lebar bar
+          categoryPercentage: 0.6   // Jarak antar bar
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            beginAtZero: false,
+            suggestedMin: 70,
+            suggestedMax: 90,
+            title: {
+              display: true,
+              text: 'Indeks Ketahanan Pangan',
+              color: '#1f6b3a'
+            },
+            ticks: { color: '#1f6b3a' }
+          },
+          y: { ticks: { color: '#1f6b3a' } }
+        }
+      },
+      plugins: [avgLine]
+    });
+  }
+
+  // Event sort
+  sortAscBtn.addEventListener('click', () => {
+    const combined = chartData.labels.map((label, i) => ({ label, value: chartData.data[i] }));
+    combined.sort((a, b) => a.value - b.value);
+    renderChart(combined.map(d => d.label), combined.map(d => d.value), tahun.value);
+  });
+
+  sortDescBtn.addEventListener('click', () => {
+    const combined = chartData.labels.map((label, i) => ({ label, value: chartData.data[i] }));
+    combined.sort((a, b) => b.value - a.value);
+    renderChart(combined.map(d => d.label), combined.map(d => d.value), tahun.value);
+  });
+
+  // Load awal
+  drawBarChart(tahun.value);
+
+  // Update saat tahun berubah
+  tahun.addEventListener('change', function () {
+    drawBarChart(this.value);
+  });
+</script>
+
+<script>
+  fetch('http://127.0.0.1:8000/api/food/boxplot')
+    .then(response => response.json())
+    .then(data => {
+      const traces = data.map(item => ({
+        y: item.fsi_values,
+        type: 'box',
+        name: item.year.toString(),
+        boxpoints: false,       // ❌ Tidak menampilkan titik-titik individual
+        marker: { color: '#1f6b3a' },
+        line: { width: 1 }
+      }));
+
+      const layout = {
+        // title: 'Indeks Ketahanan Pangan Provinsi Jawa Timur',
+        paper_bgcolor: '#ffffff',
+        plot_bgcolor: '#ffffff',
+        margin: { t: 40, l: 40, r: 20, b: 40 },
+        yaxis: {
+          title: 'Indeks Ketahanan Pangan',
+          zeroline: false,
+          range: [60, 90]
+        },
+        showlegend: false // ❌ Matikan legend
+      };
+
+      Plotly.newPlot('boxPlot', traces, layout);
+    })
+    .catch(error => {
+      console.error('Gagal memuat data boxplot:', error);
+    });
+</script>
+
+<script>
+  const map = L.map('mapIKP').setView([-7.5, 112.5], 7);
+
+  L.tileLayer('').addTo(map);
+
+  let geojsonLayer; // Simpan layer agar bisa dihapus saat tahun berubah
+
+  function getColor(fsi_class) {
+    return fsi_class === 4 ? '#ffff66' :      // Kuning - Agak Tahan
+           fsi_class === 5 ? '#a1d99b' :      // Hijau Muda - Tahan
+           fsi_class === 6 ? '#238b45' :      // Hijau Tua - Sangat Tahan
+           '#f03b20';                         // Default
+  }
+
+  function loadGeojson(tahun) {
+    fetch(`http://127.0.0.1:8000/api/food/maps/${tahun}`)
+      .then(response => response.json())
+      .then(data => {
+        if (geojsonLayer) {
+          map.removeLayer(geojsonLayer); // Hapus layer sebelumnya
+        }
+
+        geojsonLayer = L.geoJSON(data.geojson, {
+          style: function(feature) {
+            return {
+              color: '#555',
+              weight: 1,
+              fillColor: getColor(feature.properties.fsi_class),
+              fillOpacity: 0.7
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            const props = feature.properties;
+            layer.bindPopup(
+              `<strong>${props.alt_name}</strong><br>` +
+              `Provinsi: ${props.prov_name}<br>` +
+              `FSI Class: ${props.fsi_class}<br>` +
+              `Sample Value: ${props.sample_value}`
+            );
+          }
+        });
+
+        geojsonLayer.addTo(map);
+      })
+      .catch(error => {
+        console.error('Gagal mengambil data GeoJSON:', error);
+      });
+  }
+
+  // Load default tahun saat pertama kali
+  const tahunSelect = document.getElementById('tahunSelect');
+  loadGeojson(tahunSelect.value);
+
+  // Event listener saat dropdown tahun berubah
+  tahunSelect.addEventListener('change', function() {
+    loadGeojson(this.value);
+  });
+</script>
+
+
+</body>
+</html>

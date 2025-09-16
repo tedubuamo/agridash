@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agri‑Dash – Rekomendasi Komoditas & Ketahanan Pangan</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root { --brand:#1f6b3a; --brand-700:#155b2f; }
+        html, body { height: 100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+        * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+        *::-webkit-scrollbar { height: 8px; width: 8px; }
+        *::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:9999px; }
+        .sidebar-active {
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-[var(--brand)]/95 min-h-full">
+<div class="min-h-screen grid grid-cols-12 gap-0">
+    <!-- Sidebar -->
+    <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
+        <div class="flex items-center gap-">
+        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="/assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
+        </div>
+
+        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="/assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
+        </div>
+        </div>
+        <nav class="mt-4 flex-1">
+          <ul class="space-y-2 text-base">
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/index.html">🏠 <span>Home</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/maps.html">🗺️ <span>Maps Kecamatan</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/prediksi.html">📈 <span>Prediksi</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/pemetaan.html">🧭 <span>Pemetaan</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/rekomendasi.html">✅ <span>Rekomendasi</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/ketahanan.html">🛡️ <span>Ketahanan Pangan</span></a></li>
+          </ul>
+        </nav>
+        <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
+    </aside>
+
+    <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-[var(--brand)] p-4 rounded-xl">
+        <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-sm">
+        Dashboard Rekomendasi Komoditas dan Ketahanan Pangan Daerah - AgriDash
+        </h1>
+    </div>
+
+    <!-- Filter -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-3">
+        <label class="block mb-1 text-sm font-semibold text-[var(--brand-700)]">Pilih Komoditas</label>
+        <div class="relative inline-block w-full">
+            <button id="dropdownBtn" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-sm flex justify-between items-center">
+            <span id="dropdownLabel">(All)</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+            </button>
+
+            <div id="dropdownMenu" class="hidden absolute z-10 mt-1 w-full bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-auto">
+            </div>
+        </div>
+        </div>
+
+        <div>
+        <label class="block mb-1 text-sm font-semibold text-[var(--brand-700)]">Pilih Jenis Tanaman</label>
+        <select id="jenisTanaman" class="border border-slate-300 rounded-lg px-2 py-1 text-sm w-full">
+            <option value="holtikultura">Holtikultura</option>
+            <option value="pangan" selected>Pangan</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl shadow p-4">
+        <h2 class="text-lg font-bold text-[var(--brand-700)] mb-2">
+            Prediksi Luas Lahan Panen (Ha)
+        </h2>
+        <div id="containerLuas" class="space-y-2"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-4">
+        <h2 class="text-lg font-bold text-[var(--brand-700)] mb-2">
+            Prediksi Nilai Produksi (Kw)
+        </h2>
+        <div id="containerProduksi" class="space-y-2"></div>
+    </div>
+    
+        </div>
+
+    <!-- Keterangan -->
+    <div class="bg-white rounded-xl shadow p-4 text-sm text-gray-700">
+        <p>
+        Prediksi menggunakan <b>model ARIMA</b> untuk <i>Luas Lahan Panen</i> 
+        (<b>MSE:</b> 4.36×10<sup>7</sup>, <b>MAE:</b> 1.59×10<sup>3</sup>, <b>MAPE:</b> 1.74), 
+        sedangkan <b>model VAR</b> digunakan untuk <i>Nilai Produksi</i> 
+        (<b>MSE:</b> 4.64×10<sup>11</sup>, <b>MAE:</b> 2.20×10<sup>5</sup>, <b>MAPE:</b> 3.12).
+        </p>
+    </div>
+    </main>
+
+<script>
+    const dropdownBtn = document.getElementById("dropdownBtn");
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    const dropdownLabel = document.getElementById("dropdownLabel");
+    const jenisSelect = document.getElementById("jenisTanaman"); 
+
+    let selectedKomoditas = new Set(["all"]); 
+
+    dropdownBtn.addEventListener("click", () => {
+        dropdownMenu.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add("hidden");
+        }
+    });
+
+    async function loadKomoditas(jenis) {
+        try {
+            const query = [...selectedKomoditas].map(k => `komoditas=${encodeURIComponent(k)}`).join("&");
+            const res = await fetch(`http://127.0.0.1:8000/api/predict/info/${jenis}?${query}`);
+            const json = await res.json();
+            const data = json.data || [];
+            const uniqueKomoditas = [...new Set(data.map(d => d.Komoditas))];
+
+            dropdownMenu.innerHTML = `
+                <label class="flex items-center px-2 py-1 hover:bg-slate-100 cursor-pointer">
+                    <input type="checkbox" value="all" class="mr-2"> (All)
+                </label>
+            `;
+            uniqueKomoditas.forEach(k => {
+                const id = k.toLowerCase().replace(/\s+/g, "_");
+                dropdownMenu.innerHTML += `
+                    <label class="flex items-center px-2 py-1 hover:bg-slate-100 cursor-pointer">
+                        <input type="checkbox" value="${k}" class="mr-2"> ${k}
+                    </label>
+                `;
+            });
+
+            const checkboxes = dropdownMenu.querySelectorAll("input[type=checkbox]");
+            checkboxes.forEach(cb => {
+                cb.addEventListener("change", () => {
+                    if (cb.value === "all") {
+                        if (cb.checked) {
+                            selectedKomoditas = new Set(["all"]);
+                            checkboxes.forEach(c => { if (c.value !== "all") c.checked = false; });
+                        } else {
+                            selectedKomoditas.delete("all");
+                        }
+                    } else {
+                        selectedKomoditas.delete("all");
+                        dropdownMenu.querySelector("input[value=all]").checked = false;
+                        if (cb.checked) {
+                            selectedKomoditas.add(cb.value);
+                        } else {
+                            selectedKomoditas.delete(cb.value);
+                        }
+                    }
+                    updateDropdownLabel();
+                    renderCharts(data);
+                });
+            });
+
+            selectedKomoditas = new Set(["all"]);
+            dropdownMenu.querySelector("input[value=all]").checked = true;
+            updateDropdownLabel();
+
+            renderCharts(data);
+
+        } catch (err) {
+            console.error("Gagal load komoditas:", err);
+        }
+    }
+
+    function updateDropdownLabel() {
+        if (selectedKomoditas.has("all") || selectedKomoditas.size === 0) {
+            dropdownLabel.innerText = "(All)";
+        } else {
+            dropdownLabel.innerText = [...selectedKomoditas].join(", ");
+        }
+    }
+
+function renderCharts(data) {
+    const containerLuas = document.getElementById("containerLuas");
+    const containerProduksi = document.getElementById("containerProduksi");
+    containerLuas.innerHTML = "";
+    containerProduksi.innerHTML = "";
+
+    let filteredData = data;
+    if (!selectedKomoditas.has("all")) {
+        filteredData = data.filter(d => selectedKomoditas.has(d.Komoditas));
+    }
+
+    const grouped = {};
+    filteredData.forEach(d => {
+        if (!grouped[d.Komoditas]) grouped[d.Komoditas] = [];
+        grouped[d.Komoditas].push(d);
+    });
+
+    Object.keys(grouped).forEach(komoditas => {
+        const arr = grouped[komoditas].sort((a,b)=>a.Tahun-b.Tahun);
+        const before2026 = arr.filter(d => d.Tahun <= 2025);
+        const after2025  = arr.filter(d => d.Tahun >= 2026);
+
+        const rowLuas = document.createElement("div");
+        rowLuas.className = "flex items-center gap-2";
+
+        const labelLuas = document.createElement("div");
+        labelLuas.textContent = komoditas;
+        labelLuas.className = "w-24 text-sm font-semibold text-[var(--brand-700)]";
+
+        const canvasLuas = document.createElement("canvas");
+        canvasLuas.style.height = "86px";
+        canvasLuas.style.flexGrow = "1";
+
+        rowLuas.appendChild(labelLuas);
+        rowLuas.appendChild(canvasLuas);
+        containerLuas.appendChild(rowLuas);
+
+        new Chart(canvasLuas.getContext("2d"), {
+            type: "line",
+            data: {
+                datasets: [
+                    {
+                        data: before2026.map(d => ({x:d.Tahun, y:d["Luas Lahan Panen"]})),
+                        borderColor: "orange",
+                        backgroundColor: "orange",
+                        tension: 0.3,
+                        pointRadius: 3
+                    },
+                    {
+                        data: after2025.map(d => ({x:d.Tahun, y:d["Luas Lahan Panen"]})),
+                        borderColor: "green",
+                        backgroundColor: "green",
+                        tension: 0.3,
+                        pointRadius: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                interaction: { mode: "nearest", intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.parsed.y}`,
+                            title: ctx => `Tahun: ${ctx[0].parsed.x}`
+                        }
+                    }
+                },
+            scales: {
+                    x: { 
+                        type: "linear", 
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                return value; 
+                            }
+                        },
+                        grid: {
+                            color: "rgba(0,0,0,0.05)", 
+                            lineWidth: 1,           
+                            drawBorder: false,        
+                        }
+                    },
+                    y: { 
+                        title: { display: false },
+                        grid: {
+                            color: "rgba(0,0,0,0.05)",
+                            lineWidth: 1,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+        const rowProd = document.createElement("div");
+        rowProd.className = "flex items-center gap-2";
+
+        const labelProd = document.createElement("div");
+        labelProd.textContent = komoditas;
+        labelProd.className = "w-24 text-sm font-semibold text-[var(--brand-700)]";
+
+        const canvasProd = document.createElement("canvas");
+        canvasProd.style.height = "86px";
+        canvasProd.style.flexGrow = "1";
+
+        rowProd.appendChild(labelProd);
+        rowProd.appendChild(canvasProd);
+        containerProduksi.appendChild(rowProd);
+
+        new Chart(canvasProd.getContext("2d"), {
+            type: "line",
+            data: {
+                datasets: [
+                    {
+                        data: before2026.map(d => ({x:d.Tahun, y:d.Produksi})),
+                        borderColor: "orange",
+                        backgroundColor: "orange",
+                        tension: 0.3,
+                        pointRadius: 3
+                    },
+                    {
+                        data: after2025.map(d => ({x:d.Tahun, y:d.Produksi})),
+                        borderColor: "green",
+                        backgroundColor: "green",
+                        tension: 0.3,
+                        pointRadius: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                interaction: { mode: "nearest", intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.parsed.y}`,
+                            title: ctx => `Tahun: ${ctx[0].parsed.x}`
+                        }
+                    }
+                },
+            scales: {
+                    x: { 
+                        type: "linear", 
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                return value; // tampilkan tahun apa adanya, tanpa koma
+                            }
+                        },
+                        grid: {
+                            color: "rgba(0,0,0,0.05)", // warna grid tipis
+                            lineWidth: 1,             // ketebalan garis
+                            drawBorder: false,        // hilangkan garis tepi sumbu
+                        }
+                    },
+                    y: { 
+                        title: { display: false },
+                        grid: {
+                            color: "rgba(0,0,0,0.05)",
+                            lineWidth: 1,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString(); // biar angka produksi/lahan tetap ada separator
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+}
+
+
+    jenisSelect.addEventListener("change", (e) => {
+        loadKomoditas(e.target.value);
+    });
+
+    loadKomoditas(jenisSelect.value);
+</script>
+
+
+</body>
+</html>

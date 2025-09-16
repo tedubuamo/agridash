@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agri‑Dash – Rekomendasi Komoditas & Ketahanan Pangan</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --brand:#1f6b3a; --brand-700:#155b2f; }
+        html, body { height: 100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+        /* thin scroll */
+        * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+        *::-webkit-scrollbar { height: 8px; width: 8px; }
+        *::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:9999px; }
+
+        .sidebar-active {
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-pangan {
+          width: 900px;
+          margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body class="bg-[var(--brand)]/95 min-h-full">
+<div class="min-h-screen grid grid-cols-12 gap-0">
+    <!-- Sidebar -->
+    <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
+        <div class="flex items-center gap-">
+        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
+        </div>
+
+        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
+        </div>
+        </div>
+        <nav class="mt-4 flex-1">
+          <ul class="space-y-2 text-base">
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="index.html">🏠 <span>Home</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/maps.html">🗺️ <span>Maps Kecamatan</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/prediksi.html">📈 <span>Prediksi</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/pemetaan.html">🧭 <span>Pemetaan</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/rekomendasi.html">✅ <span>Rekomendasi</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/ketahanan.html">🛡️ <span>Ketahanan Pangan</span></a></li>
+              <button onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded">Logout</button>  
+          </ul>
+        </nav>
+        <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
+    </aside>
+
+    <!-- Main -->
+    <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-[var(--brand)] p-4 rounded-xl">
+            <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-sm">
+            Dashboard Rekomendasi Komoditas dan Ketahanan Pangan Daerah - AgriDash
+            </h1>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4">
+
+        <!-- KIRI -->
+        <div class="col-span-12 xl:col-span-6 space-y-4">
+            <div class="flex flex-col md:flex-row gap-4">
+            <!-- Filter Tahun -->
+            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4 w-full md:w-1/4">
+                <label class="text-emerald-800 font-bold block mb-1 text-sm">Pilih Tahun</label>
+                  <select id="tahunSelect" class="border border-slate-200 rounded-lg px-2 py-1 text-sm w-full">
+                      <option value="2018">2018</option>
+                      <option value="2019">2019</option>
+                      <option value="2020">2020</option>
+                      <option value="2021">2021</option>
+                      <option value="2022">2022</option>
+                      <option value="2023">2023</option>
+                  </select>
+            </div>
+            <!-- Kartu 1 -->
+            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4 flex-1">
+                <p class="text-sm text-emerald-800 font-bold">Luas Panen Tanaman Pangan</p>
+                <p id="luasPanen" class="text-2xl font-extrabold text-slate-800">Loading...</p>
+            </div>
+
+            <!-- Kartu 2 -->
+            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4 flex-1">
+                <p class="text-sm text-emerald-800 font-bold">Produksi Tanaman Pangan</p>
+                <p id="produksiPangan" class="text-2xl font-extrabold text-slate-800">Loading...</p>
+            </div>
+            </div>
+
+            <!-- Grafik Batang -->
+            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4">
+            <h2 class="text-lg font-bold text-emerald-800 mb-4">Luas Lahan vs Produksi Komoditas Tanaman Pangan</h2>
+            <!-- Horizontal bar comparison -->
+                <div id="chart-container" class="grid grid-cols-12 gap-4"></div>
+                <div class="mt-3 flex justify-between text-xs text-slate-500"><span>Luas Panen (Ha)</span><span>Produksi (Kw)</span></div>
+            </div>
+            
+            <div class="col-span-12 xl:col-span-12 bg-white rounded-2xl shadow border border-emerald-100 p-4 h-[300px]">
+              <h3 class="font-semibold text-emerald-800 mb-4">Persentase Luas Panen Komoditas Tanaman Holtikultura</h3>
+              <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                <!-- Bagian Bar -->
+                <div class="w-full md:w-3/4 flex items-center">
+                  <canvas id="hortiChart"></canvas>
+                </div>
+
+                <!-- Bagian Legend -->
+                <div class="w-full md:w-1/4 flex flex-col justify-center">
+                  <ul id="hortiLegend" class="space-y-2 text-sm"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <!-- KANAN -->
+        <div class="col-span-12 xl:col-span-6 space-y-4">
+
+            <!-- Line Chart -->
+            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4">
+              <!-- Header + Filter -->
+              <div class="flex items-center justify-between mb-4">
+                <h2 id="luas-panen-komoditas" class="text-lg font-bold text-emerald-800">
+                  Luas Panen Komoditas
+                </h2>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-slate-500">Komoditas</span>
+                  <select id="komoditasSelect" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
+                    <option value="r_onions">Bawang Merah</option>
+                    <option value="rice">Padi</option>
+                    <option value="l_chilies">Cabai Besar</option>
+                    <option value="cayenne">Cabai Rawit</option>
+                    <option value="corn">Jagung</option>
+                    <option value="g_beans">Kacang Hijau</option>
+                    <option value="l_beans">Kacang Panjang</option>
+                    <option value="peanuts">Kacang Tanah</option>
+                    <option value="soybeans">Kedelai</option>
+                    <option value="cassava">Ketela Pohon</option>
+                    <option value="swpot">Ketela Rambat</option>
+                    <option value="cabbage">Kubis</option>
+                    <option value="cucumber">Timun</option>
+                    <option value="tomatoes">Tomat</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Chart -->
+              <div class="h-56">
+                <canvas id="chartKomoditas"></canvas>
+              </div>
+            </div>
+
+          <!-- Scatter & Radar -->
+          <div class="grid grid-cols-12 gap-4">
+            
+            <!-- Scatter Chart -->
+            <div class="col-span-12 md:col-span-6 bg-white rounded-2xl shadow border border-emerald-100 p-4">
+              <h2 class="text-lg font-bold text-emerald-800">Sebaran Produksi Tanaman Pangan</h2>
+
+              <!-- Pilihan Axis -->
+              <div class="flex flex-wrap items-center gap-4 mt-4 mb-4">
+                <div class="flex items-center gap-2">
+                  <label class="text-sm text-slate-500">Pilih X Axis</label>
+                  <select id="xAxisSelectScatter" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
+                    <option value="rice">Padi</option>
+                    <option value="corn">Jagung</option>
+                    <option value="peanuts">Kacang Tanah</option>
+                    <option value="soybeans">Kedelai</option>
+                    <option value="cassava">Ketela Pohon</option>
+                    <option value="swpot">Ketela Rambat</option>
+                  </select>
+                </div>
+                <div class="flex items-center gap-2 mb-4">
+                  <label class="text-sm text-slate-500">Pilih Y Axis</label>
+                  <select id="yAxisSelectScatter" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
+                    <option value="rice">Padi</option>
+                    <option value="corn">Jagung</option>
+                    <option value="peanuts">Kacang Tanah</option>
+                    <option value="soybeans">Kedelai</option>
+                    <option value="cassava">Ketela Pohon</option>
+                    <option value="swpot">Ketela Rambat</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Scatter Chart -->
+              <div class="h-48 relative bg-emerald-50 rounded-lg">
+                <div class="absolute left-4 right-4 top-4 bottom-4">
+                  <canvas id="scatterChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Legend -->
+              <div class="flex items-center gap-3 mt-3 text-xs">
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full bg-black"></span> Wilayah
+                </span>
+                <span class="px-2 py-0.5 rounded bg-orange-100 text-orange-800">Selatan</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Utara</span>
+              </div>
+            </div>
+
+            <!-- Produksi Komoditas Pangan -->
+            <div class="col-span-12 md:col-span-6 bg-white rounded-2xl shadow border border-emerald-100 p-4">
+              <h2 class="text-lg font-bold text-emerald-800 mb-2">Produksi Komoditas Pangan</h2>
+                
+                <div class="flex justify-center gap-2">
+                  <!-- Pilih Tahun -->
+                  <select id="tahunFilterScatter" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                  </select>
+
+                  <div class="relative w-[160px]">
+                    <button id="kecamatanDropdownBtn" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-sm flex justify-between items-center">
+                      <span id="kecamatanDropdownLabel">(All)</span>
+                      <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </button>
+
+                    <div id="kecamatanDropdownMenu" class="hidden absolute z-10 mt-1 w-full bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-auto text-sm">
+                    </div>
+                  </div>
+
+                  <!-- Pilih Komoditas -->
+                  <select id="komoditasFilterScatter" class="border border-slate-200 rounded-lg py-1 px-1 text-sm">
+                    <option value="rice">Padi</option>
+                    <option value="corn">Jagung</option>
+                    <option value="peanuts">Kacang Tanah</option>
+                    <option value="soybeans">Kedelai</option>
+                    <option value="cassava">Ketela Pohon</option>
+                    <option value="swpot">Ketela Rambat</option>
+                  </select>
+                </div>
+              
+                <div class="h-72 flex items-center justify-center">
+                  <canvas id="spiderChart"></canvas>
+                </div>
+            </div>
+
+            <div class="col-span-12 xl:col-span-12 bg-white rounded-2xl shadow border border-emerald-100 p-4 h-[300px]">
+              <h3 class="font-semibold text-emerald-800 mb-4">Persentase Luas Panen Komoditas Tanaman Pangan</h3>
+
+              <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                <!-- Bagian Bar -->
+                <div class="w-full md:w-3/4 flex items-center">
+                  <canvas id="harvestChart"></canvas>
+                </div>
+
+                <!-- Bagian Legend -->
+                <div class="w-full md:w-1/4 flex flex-col justify-center">
+                  <ul id="harvestLegend" class="space-y-2 text-sm"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+    </main>
+</div>
+
+<script>
+
+      const menuItems = document.querySelectorAll("nav ul li a");
+
+      menuItems.forEach(item => {
+        item.addEventListener("click", function() {
+          // hapus class active dari semua
+          menuItems.forEach(el => el.classList.remove("sidebar-active"));
+          // tambahkan ke yang diklik
+          this.classList.add("sidebar-active");
+        });
+      });
+
+      async function loadInfoByYear(tahun) {
+          try {
+              const res = await fetch(`http://127.0.0.1:8000/api/home/info/${tahun}`);
+              const data = await res.json();
+
+              // Isi ke elemen HTML
+              document.getElementById('luasPanen').textContent =
+                  data.harvest.produksi_panen.toLocaleString('id-ID') + ' Ha';
+
+              document.getElementById('produksiPangan').textContent =
+                  data.harvest_production_pangan.produksi_panen.toLocaleString('id-ID') + ' Kw';
+          } catch (err) {
+              console.error('Gagal memuat data:', err);
+          }
+      }
+
+      async function loadBarData() {
+          tahun = document.getElementById("tahunSelect").value;
+          const res = await fetch(`http://127.0.0.1:8000/api/home/comparison/${tahun}`);
+          const data = await res.json();
+
+          // Total luas panen & produksi
+          const totalLuas = data.reduce((sum, d) => sum + d.luas_panen, 0);
+          const totalProduksi = data.reduce((sum, d) => sum + d.produksi, 0);
+
+          // Cari nilai maksimum untuk normalisasi panjang bar
+          const maxLuasPanen = Math.max(...data.map(d => d.luas_panen));
+          const maxProduksi = Math.max(...data.map(d => d.produksi));
+
+          let htmlKiri = `<div class="col-span-6 space-y-2">`;
+          let htmlKanan = `<div class="col-span-6 space-y-2">`;
+
+          data.forEach(item => {
+              const persenProduksi = ((item.produksi / maxProduksi) * 100).toFixed(1);
+              const persenLuas = ((item.luas_panen / maxLuasPanen) * 100).toFixed(1);
+
+              htmlKiri += `
+                  <div class="flex items-center gap-2 text-xs">
+                      <span class="w-28 truncate">${item.kecamatan}</span>
+                      <div class="flex-1 bg-emerald-50 rounded">
+                          <div class="h-3 rounded bg-emerald-700" style="width:${persenProduksi}%;"></div>
+                      </div>
+                      <span class="w-14 text-right">${item.produksi.toLocaleString("id-ID")}</span>
+                  </div>
+              `;
+
+              htmlKanan += `
+                  <div class="flex items-center gap-2 text-xs">
+                      <span class="w-28 truncate">${item.kecamatan}</span>
+                      <div class="flex-1 bg-amber-50 rounded">
+                          <div class="h-3 rounded bg-amber-500" style="width:${persenLuas}%;"></div>
+                      </div>
+                      <span class="w-16 text-right">${item.luas_panen.toLocaleString("id-ID")}</span>
+                  </div>
+              `;
+          });
+
+          htmlKiri += `</div>`;
+          htmlKanan += `</div>`;
+
+          document.getElementById("chart-container").innerHTML = htmlKiri + htmlKanan;
+      }
+      
+      loadInfoByYear(document.getElementById('tahunSelect').value);
+      loadBarData();
+      document.getElementById('tahunSelect').addEventListener('change', (e) => {
+        loadInfoByYear(e.target.value);
+        loadBarData();
+      });
+
+      const chartx = document.getElementById("chartKomoditas").getContext("2d");
+      let chart;
+
+      async function loadChartByKomoditas(komoditas) {
+        const res = await fetch(`http://127.0.0.1:8000/api/home/harvest/${komoditas}`);
+        const data = await res.json();
+        console.log("API response:", data);
+        const labels = data.map(d => d.Year);
+        const values = data.map(d => d[komoditas]);
+
+        const titleMap = { 
+          rice: "Padi", 
+          corn: "Jagung", 
+          r_onions: "Bawang Merah",
+          swpot: "Ketela Rambat",
+          cassava: "Ketela Pohon", 
+          peanuts: "Kacang Tanah",
+          soybeans: "Kedelai",
+          g_beans: "Kacang Hijau",
+          l_chilies: "Cabai Besar",
+          cayenne: "Cabai Rawit",
+          cabbage: "Kubis",
+          tomatoes: "Tomat",
+          l_beans: "Kacang Panjang",
+          cucumber: "Timun" 
+        };
+        document.getElementById("luas-panen-komoditas").textContent =
+            "Luas Panen Komoditas " + titleMap[komoditas];
+
+        if (chart) {
+          chart.data.labels = labels;
+          chart.data.datasets[0].data = values;
+          chart.data.datasets[0].label = titleMap[komoditas];
+          chart.update();
+        } else {
+          chart = new Chart(chartx, {
+            type: "line",
+            data: {
+              labels: labels,
+              datasets: [{
+                label: "Luas Panen",
+                data: values,
+                borderColor: "#166534",
+                backgroundColor: "rgba(22, 101, 52, 0.2)",
+                tension: 0.3,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: "#166534"
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false }
+              },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Tahun"
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Luas Panen (Ha)",
+                  rotation: -90, // biar miring tegak
+                  padding: { right: 10 }
+                },
+            }}
+          }});
+        }
+      }
+
+      document.getElementById("komoditasSelect").addEventListener("change", (e) => {
+        loadChartByKomoditas(e.target.value);});
+      loadChartByKomoditas("r_onions");
+
+      let harvestChart = null; // simpan chart instance global
+
+      async function loadHarvestComparison(tahun) {
+        if (!tahun) {
+          tahun = document.getElementById("tahunSelect").value;
+        }
+
+        const res = await fetch(`http://127.0.0.1:8000/api/home/info/${tahun}`);
+        const data = await res.json();
+        const harvest = data.harvest;
+
+        const totalNasional = harvest.produksi_panen;
+        const totalUtara = Object.values(harvest.by_region.north).reduce((a,b)=>a+b,0);
+        const totalSelatan = Object.values(harvest.by_region.south).reduce((a,b)=>a+b,0);
+
+        const persenUtara = (totalUtara / totalNasional * 100).toFixed(2);
+        const persenSelatan = (totalSelatan / totalNasional * 100).toFixed(2);
+
+        const komoditasMap = {
+          rice: "Padi",
+          corn: "Jagung",
+          cassava: "Singkong",
+          swpot: "Ubi Jalar",
+          peanuts: "Kacang Tanah",
+          soybeans: "Kedelai"
+        };
+
+        const komoditas = Object.keys(harvest.by_region.north);
+        const colors = ["#16a34a","#22c55e","#3b82f6","#0ea5e9","#facc15","#f97316","#ef4444","#8b5cf6"];
+
+        const datasets = komoditas.map((kom, i) => ({
+          label: komoditasMap[kom] || kom,
+          data: [
+            (harvest.by_region.south[kom] / totalSelatan * persenSelatan).toFixed(2),
+            (harvest.by_region.north[kom] / totalUtara * persenUtara).toFixed(2)
+          ],
+          backgroundColor: colors[i % colors.length],
+          stack: "stack"
+        }));
+
+        // === Destroy chart lama sebelum buat baru ===
+        if (harvestChart !== null) {
+          harvestChart.destroy();
+        }
+
+        const ctx = document.getElementById("harvestChart").getContext("2d");
+        harvestChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Wilayah Selatan", "Wilayah Utara"],
+            datasets: datasets
+          },
+          options: {
+            maintainAspectRatio: false,
+            indexAxis: "y",
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (context) => `${context.dataset.label}: ${context.formattedValue}%`
+                }
+              },
+            },
+            scales: {
+              x: {
+                stacked: true,
+                ticks: {
+                  callback: (value) => value + "%"
+                }
+              },
+              y: { stacked: true }
+            }
+          }
+        });
+
+        // === Update legend manual ===
+        const legendContainer = document.getElementById("harvestLegend");
+        legendContainer.innerHTML = ""; // clear lama
+        datasets.forEach((ds) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<span class="inline-block w-4 h-4 mr-2 rounded" style="background:${ds.backgroundColor}"></span>${ds.label}`;
+          legendContainer.appendChild(li);
+        });
+      }
+
+      // Load awal (cukup sekali saja)
+      document.addEventListener("DOMContentLoaded", () => {
+        loadHarvestComparison();
+
+        // Event listener untuk dropdown
+        document.getElementById("tahunSelect").addEventListener("change", (e) => {
+          loadHarvestComparison(e.target.value);
+        });
+      });
+
+      let hortiChart = null; // simpan chart instance global
+
+      async function loadHortiComparison(tahun) {
+        if (!tahun) {
+          tahun = document.getElementById("tahunSelect").value;
+        }
+
+        const res = await fetch(`http://127.0.0.1:8000/api/home/horticulture/${tahun}`);
+        const data = await res.json();
+        const harvest = data.harvest;
+
+        const totalNasional = harvest.produksi_panen;
+        const totalUtara = Object.values(harvest.by_region.north).reduce((a,b)=>a+b,0);
+        const totalSelatan = Object.values(harvest.by_region.south).reduce((a,b)=>a+b,0);
+
+        const persenUtara = (totalUtara / totalNasional * 100).toFixed(2);
+        const persenSelatan = (totalSelatan / totalNasional * 100).toFixed(2);
+
+        const komoditasMap = {
+          g_beans: "Kacang Hijau",
+          r_onions: "Bawang Merah",
+          l_chilies: "Cabai Besar",
+          cayenne: "Cabai Rawit",
+          cabbage: "Kubis",
+          tomatoes: "Tomat",
+          l_beans: "Kacang Panjang",
+          cucumber: "Timun" 
+        };
+
+        const komoditas = Object.keys(harvest.by_region.north);
+        const colors = ["#16a34a","#22c55e","#3b82f6","#0ea5e9","#facc15","#f97316","#ef4444","#8b5cf6"];
+
+        const datasets = komoditas.map((kom, i) => ({
+          label: komoditasMap[kom] || kom,
+          data: [
+            (harvest.by_region.south[kom] / totalSelatan * persenSelatan).toFixed(2),
+            (harvest.by_region.north[kom] / totalUtara * persenUtara).toFixed(2)
+          ],
+          backgroundColor: colors[i % colors.length],
+          stack: "stack"
+        }));
+
+        // === Destroy chart lama sebelum buat baru ===
+        if (hortiChart !== null) {
+          hortiChart.destroy();
+        }
+
+        const ctx = document.getElementById("hortiChart").getContext("2d");
+        hortiChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Wilayah Selatan", "Wilayah Utara"],
+            datasets: datasets
+          },
+          options: {
+            maintainAspectRatio: false,
+            indexAxis: "y",
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (context) => `${context.dataset.label}: ${context.formattedValue}%`
+                }
+              },
+            },
+            scales: {
+              x: {
+                stacked: true,
+                ticks: {
+                  callback: (value) => value + "%"
+                }
+              },
+              y: { stacked: true }
+            }
+          }
+        });
+
+        // === Update legend manual ===
+        const legendContainer = document.getElementById("hortiLegend");
+        legendContainer.innerHTML = ""; // clear lama
+        datasets.forEach((ds) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<span class="inline-block w-4 h-4 mr-2 rounded" style="background:${ds.backgroundColor}"></span>${ds.label}`;
+          legendContainer.appendChild(li);
+        });
+      }
+
+      // Load awal (cukup sekali saja)
+      document.addEventListener("DOMContentLoaded", () => {
+        loadHortiComparison();
+
+        // Event listener untuk dropdown
+        document.getElementById("tahunSelect").addEventListener("change", (e) => {
+          loadHortiComparison(e.target.value);
+        });
+      });
+
+      const scatterTahun   = document.getElementById("tahunSelect"); 
+      const elXScatter     = document.getElementById("xAxisSelectScatter");
+      const elYScatter     = document.getElementById("yAxisSelectScatter");
+      const ctxScatter     = document.getElementById("scatterChart").getContext("2d");
+
+      // mapping label ramah untuk judul axis
+      const labelMapScatter = {
+        rice: "Padi",
+        corn: "Jagung",
+        peanuts: "Kacang Tanah",
+        soybeans: "Kedelai",
+        cassava: "Ketela Pohon",
+        swpot: "Ketela Rambat"
+      };
+
+      const COLOR_SELATAN = "#f59e0b"; // oranye
+      const COLOR_UTARA   = "#059669"; // hijau
+
+      let scatterChart;
+
+      function fmt(n) {
+        try { return new Intl.NumberFormat("id-ID").format(n); }
+        catch { return n; }
+      }
+
+      function titleFor(key) {
+        return labelMapScatter[key] || key;
+      }
+
+      async function loadMapScatter() {
+        const tahun = scatterTahun.value;
+        const xKey  = elXScatter.value;
+        const yKey  = elYScatter.value;
+
+        try {
+          const res = await fetch(`http://127.0.0.1:8000/api/home/scatter/${tahun}/${xKey}/${yKey}`);
+          const raw = await res.json();
+
+          // pisahkan berdasarkan wilayah
+          const dataSelatan = raw.filter(d => d.wilayah === "Selatan")
+                                .map(d => ({ x: d.x, y: d.y, kecamatan: d.kecamatan }));
+          const dataUtara   = raw.filter(d => d.wilayah === "Utara")
+                                .map(d => ({ x: d.x, y: d.y, kecamatan: d.kecamatan }));
+
+          // siapkan config Chart.js
+          const config = {
+            type: "scatter",
+            data: {
+              datasets: [
+                {
+                  label: "Selatan",
+                  data: dataSelatan,
+                  pointRadius: 4,
+                  pointHoverRadius: 6,
+                  backgroundColor: COLOR_SELATAN,
+                  borderColor: COLOR_SELATAN,
+                  borderWidth: 1
+                },
+                {
+                  label: "Utara",
+                  data: dataUtara,
+                  pointRadius: 4,
+                  pointHoverRadius: 6,
+                  backgroundColor: COLOR_UTARA,
+                  borderColor: COLOR_UTARA,
+                  borderWidth: 1
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false }, 
+                tooltip: {
+                  callbacks: {
+                    label: (ctxScatter) => {
+                      const p = ctxScatter.raw;
+                      return `${p.kecamatan}: ${titleFor(xKey)}=${fmt(p.x)}, ${titleFor(yKey)}=${fmt(p.y)}`;                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  title: { display: true, text: titleFor(xKey) },
+                  ticks: { callback: function() { return ""; } },
+                  grid: { drawBorder: false, drawTicks: false, display: false }
+                },
+                y: {
+                  title: { display: true, text: titleFor(yKey) },
+                  // ticks: { callback: (v) => fmt(v) },
+                  ticks: { callback: function() { return ""; } },
+                  grid: { drawBorder: false, drawTicks: false, display: false }                
+                }
+              }
+            }
+          };
+
+          if (scatterChart) scatterChart.destroy();
+          scatterChart = new Chart(ctxScatter, config);
+
+        } catch (e) {
+          console.error("Gagal memuat scatter:", e);
+        }
+      }
+      loadMapScatter(2018, "Padi", "Padi");
+      scatterTahun.addEventListener("change", loadMapScatter);
+      elXScatter.addEventListener("change", loadMapScatter);
+      elYScatter.addEventListener("change", loadMapScatter);
+
+const kecamatanDropdownBtn = document.getElementById("kecamatanDropdownBtn");
+const kecamatanDropdownMenu = document.getElementById("kecamatanDropdownMenu");
+const kecamatanDropdownLabel = document.getElementById("kecamatanDropdownLabel");
+
+let selectedKecamatan = new Set(["All"]);
+
+const kecamatanList = [
+  "Bakung", "Wonotirto", "Panggungrejo", "Wates", "Binangun", "Kademangan",
+  "Kanigoro", "Selopuro", "Kesamben", "Selorejo", "Doko", "Wlingi",
+  "Gandusari", "Garum", "Nglegok", "Sanankulon", "Ponggok", "Srengat",
+  "Wonodadi", "Udanawu"
+];
+
+function renderKecamatanDropdown() {
+  kecamatanDropdownMenu.innerHTML = `
+    <label class="flex items-center px-2 py-1 hover:bg-slate-100 cursor-pointer">
+      <input type="checkbox" value="All" class="mr-2"> (All)
+    </label>
+  `;
+
+  kecamatanList.forEach(kec => {
+    kecamatanDropdownMenu.innerHTML += `
+      <label class="flex items-center px-2 py-1 hover:bg-slate-100 cursor-pointer">
+        <input type="checkbox" value="${kec}" class="mr-2"> ${kec}
+      </label>
+    `;
+  });
+
+  const checkboxes = kecamatanDropdownMenu.querySelectorAll("input[type=checkbox]");
+  checkboxes.forEach(cb => {
+    cb.addEventListener("change", () => {
+      if (cb.value === "All") {
+        if (cb.checked) {
+          selectedKecamatan = new Set(["All"]);
+          checkboxes.forEach(c => { if (c.value !== "All") c.checked = false; });
+        } else {
+          selectedKecamatan.delete("All");
+        }
+      } else {
+        selectedKecamatan.delete("All");
+        kecamatanDropdownMenu.querySelector("input[value='All']").checked = false;
+        if (cb.checked) {
+          selectedKecamatan.add(cb.value);
+        } else {
+          selectedKecamatan.delete(cb.value);
+        }
+      }
+      updateKecamatanLabel();
+      loadSpiderChart(); // Trigger chart update
+    });
+  });
+
+  // Initial state
+  selectedKecamatan = new Set(["All"]);
+  kecamatanDropdownMenu.querySelector("input[value='All']").checked = true;
+  updateKecamatanLabel();
+}
+
+function updateKecamatanLabel() {
+  if (selectedKecamatan.has("All") || selectedKecamatan.size === 0) {
+    kecamatanDropdownLabel.innerText = "(All)";
+  } else {
+    kecamatanDropdownLabel.innerText = [...selectedKecamatan].join(", ");
+  }
+}
+
+kecamatanDropdownBtn.addEventListener("click", () => {
+  kecamatanDropdownMenu.classList.toggle("hidden");
+});
+
+document.addEventListener("click", (e) => {
+  if (!kecamatanDropdownBtn.contains(e.target) && !kecamatanDropdownMenu.contains(e.target)) {
+    kecamatanDropdownMenu.classList.add("hidden");
+  }
+});
+
+// Call this once on page load
+renderKecamatanDropdown();
+
+async function loadSpiderChart() {
+  const ctx = document.getElementById("spiderChart").getContext("2d");
+  const tahun = document.getElementById("tahunFilterScatter").value;
+  const komoditas = document.getElementById("komoditasFilterScatter").value;
+
+  // Ambil kecamatan dari checkbox
+  let kecamatanParam = "All";
+  if (!selectedKecamatan.has("All")) {
+    kecamatanParam = [...selectedKecamatan].map(k => encodeURIComponent(k)).join(",");
+  }
+
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/api/home/spider/${tahun}/${kecamatanParam}/${komoditas}`);
+    const raw = await res.json();
+    console.log("Spider Chart Data:", raw);
+
+    if (window.spiderChart && typeof window.spiderChart.destroy === "function") {
+      window.spiderChart.destroy();
+    }
+
+    window.spiderChart = new Chart(ctx, {
+      type: "radar",
+      data: {
+        labels: raw.labels,
+        datasets: [
+          {
+            label: raw.komoditas,
+            data: raw.values,
+            fill: true,
+            backgroundColor: "rgba(16, 185, 129, 0.25)",
+            borderColor: "rgb(5, 150, 105)",
+            pointBackgroundColor: "rgb(5, 150, 105)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgb(5, 150, 105)"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.label}: ${ctx.formattedValue} Kw`
+            }
+          }
+        },
+        scales: {
+          r: {
+            angleLines: { color: "rgba(16, 185, 129, 0.2)" },
+            grid: { color: "rgba(16, 185, 129, 0.15)" },
+            pointLabels: {
+              color: "#064e3b",
+              font: { size: 12 }
+            },
+            ticks: { display: false }
+          }
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Gagal memuat spider chart:", err);
+  }
+}
+
+document.getElementById("tahunFilterScatter").addEventListener("change", loadSpiderChart);
+document.getElementById("komoditasFilterScatter").addEventListener("change", loadSpiderChart);
+
+// Load awal
+loadSpiderChart();
+
+</script>
+
+<script>
+  // Cek status login
+  if (localStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "pages/login.html";
+  }
+</script>
+
+<script>
+  function logout() {
+    localStorage.removeItem("isLoggedIn");
+    window.location.href = "pages/login.html";
+  }
+</script>
+
+</body>
+</html>

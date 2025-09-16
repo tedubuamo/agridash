@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agri‑Dash – Rekomendasi Komoditas & Ketahanan Pangan</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root { --brand:#1f6b3a; --brand-700:#155b2f; }
+        html, body { height: 100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+        * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+        *::-webkit-scrollbar { height: 8px; width: 8px; }
+        *::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:9999px; }
+        .sidebar-active {
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+        .chart-pangan {
+          width: 900px;
+          margin: 20px auto;
+        }
+        .legend {
+          line-height: 18px;
+          color: #555;
+          background: white;
+          padding: 6px 8px;
+          box-shadow: 0 0 6px rgba(0,0,0,0.2);
+          border-radius: 8px;
+          font-size: 12px;
+        }
+        .legend i {
+          width: 18px;
+          height: 18px;
+          float: left;
+          margin-right: 8px;
+          opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body class="bg-[var(--brand)]/95 min-h-full">
+<div class="min-h-screen grid grid-cols-12 gap-0">
+    <!-- Sidebar -->
+    <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
+        <div class="flex items-center gap-">
+        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="/assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
+        </div>
+
+        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <img src="/assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
+        </div>
+        </div>
+        <nav class="mt-4 flex-1">
+          <ul class="space-y-2 text-base">
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/index.html">🏠 <span>Home</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/maps.html">🗺️ <span>Maps Kecamatan</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/prediksi.html">📈 <span>Prediksi</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/pemetaan.html">🧭 <span>Pemetaan</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/rekomendasi.html">✅ <span>Rekomendasi</span></a></li>
+              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/ketahanan.html">🛡️ <span>Ketahanan Pangan</span></a></li>
+          </ul>
+        </nav>
+        <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
+    </aside>
+
+    <!-- Main -->
+    <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-[var(--brand)] p-4 rounded-xl">
+            <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-sm">
+            Dashboard Rekomendasi Komoditas dan Ketahanan Pangan Daerah - AgriDash
+            </h1>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4">
+            <!-- Filter Tahun -->
+            <div class="col-span-2 bg-white border border-emerald-200 rounded-lg p-3">
+            <label class="block text-sm font-bold text-emerald-800 mb-1">Pilih Tahun</label>
+            <select id="tahunSelect" class="w-full border border-slate-300 rounded px-2 py-1 text-sm">
+                <option value="2018">2018</option>
+                <option value="2019">2019</option>
+                <option value="2020">2020</option>
+                <option value="2021">2021</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+            </select>
+            </div>
+
+            <!-- Legend Produksi -->
+            <div class="col-span-4 bg-white border border-emerald-200 rounded-lg p-3 text-sm">
+            <h3 class="font-bold text-center mb-2">- Dominasi Produksi -</h3>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-600"></span>Padi</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-yellow-600"></span>Ubi Jalar</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-400"></span>Ubi Kayu, Kacang Tanah, & Kedelai</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-orange-400"></span>Jagung & Ubi Jalar</div>
+            </div>
+            </div>
+
+            <!-- Legend Lahan Panen -->
+            <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-3 text-sm">
+            <h3 class="font-bold text-center mb-2">- Dominasi Luas Lahan Panen -</h3>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-700"></span>Kubis, Tomat, Kacang Panjang, & Ketimun</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-yellow-500"></span>Jagung, Ubi Kayu, Kedelai, Kacang Hijau, & ...</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-400"></span>Kacang Tanah</div>
+            </div>
+            </div>
+        </div>
+
+        <!-- 🔹 Baris tengah: 2 Peta -->
+        <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-4">
+            <h2 class="text-center font-bold text-emerald-800 mb-2">Produksi Tanaman Pangan</h2>
+            <div id="mapProduksi" class="h-[400px]"></div>
+            </div>
+            <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-4">
+            <h2 class="text-center font-bold text-emerald-800 mb-2">Luas Lahan Panen Tanaman Pangan & Hortikultura</h2>
+            <div id="mapLahan" class="h-[400px]"></div>
+            </div>
+        </div>
+
+        <!-- 🔹 Baris tengah: Tabel centroid kiri dan kanan -->
+        <div class="grid grid-cols-12 gap-4">
+          <!-- Tabel Produksi di kiri -->
+          <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-3">
+            <h3 class="text-center font-bold text-emerald-800 mb-2">
+              Centroid Produksi Tanaman Pangan 
+            </h3>
+            <div class="overflow-x-auto">
+            <table class="w-full text-s border min-w-[1000px] table-fixed">
+              <thead class="bg-emerald-50">
+                <tr></tr> <!-- akan diisi oleh JS -->
+              </thead>
+              <tbody id="tableProduksi"></tbody>
+            </table>
+          </div>
+        </div>
+
+          <!-- Tabel Lahan di kanan -->
+          <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-3">
+            <h3 class="text-center font-bold text-emerald-800 mb-2">
+              Centroid Luas Lahan Panen Tanaman Pangan & Hortikultura
+            </h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-s border min-w-[2000px] table-fixed">
+                <thead class="bg-emerald-50">
+                  <tr></tr> <!-- akan diisi oleh JS -->
+                </thead>
+                <tbody id="tableLahan"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="bg-white border border-emerald-200 rounded-lg p-4 text-sm leading-relaxed">
+            <p>
+            Pemetaan dominasi menggunakan <b>model Agglomerative Clustering</b> menunjukkan bahwa 
+            <b>Complete Linkage</b> cocok untuk <b>Luas Lahan Panen</b> 
+            (<b>Silhouette</b>: 0.53, DBI: 0.60), sementara 
+            <b>Single Linkage</b> lebih optimal untuk <b>Produksi</b> 
+            (<b>Silhouette</b>: 0.70, DBI: 0.25).
+            </p>
+        </div>
+    </main>
+</div>
+
+<script>
+  const map = L.map('mapProduksi').setView([-7.5, 112], 11);
+  L.tileLayer('').addTo(map);
+
+  const tahunSelect = document.getElementById('tahunSelect');
+  let geojsonLayer;
+
+  function getColorByLabel(label) {
+    switch (label) {
+      case 0: return '#a1d99b'; // hijau muda
+      case 1: return '#ffeda0'; // kuning
+      case 2: return '#fc9272'; // merah muda
+      case 3: return '#de2d26'; // merah tua
+      default: return '#cccccc'; // abu-abu jika tidak ada label
+    }
+  }
+
+  function loadMapData(tahun) {
+    fetch(`http://127.0.0.1:8000/api/mapping/maps_prod/${tahun}`)
+      .then(res => res.json())
+      .then(data => {
+        if (geojsonLayer) {
+          map.removeLayer(geojsonLayer);
+        }
+
+        geojsonLayer = L.geoJSON(data, {
+          style: function (feature) {
+            const labelValue = feature.properties.label;
+            return {
+              color: '#1f6b3a',
+              weight: 1,
+              fillColor: getColorByLabel(labelValue),
+              fillOpacity: 1
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            layer.bindPopup(`
+              <b>${feature.properties.nm_kecamatan}</b><br>
+              Label: ${feature.properties.label}
+            `);
+          }
+        }).addTo(map);
+
+        try {
+          map.fitBounds(geojsonLayer.getBounds());
+        } catch (e) {
+          console.warn("Tidak bisa fitBounds, mungkin data kosong");
+        }
+      })
+      .catch(err => console.error('Gagal memuat GeoJSON:', err));
+  }
+
+  loadMapData(tahunSelect.value);
+  tahunSelect.addEventListener('change', function () {
+    loadMapData(this.value);
+});
+
+</script>
+
+<script>
+  const mapLahan = L.map('mapLahan').setView([-7.5, 112], 9);
+  L.tileLayer('').addTo(map);
+  const tahunSelectLahan = document.getElementById('tahunSelect');
+  let geojsonLayerLahan; 
+
+  function loadMapData(tahun) {
+    fetch(`http://127.0.0.1:8000/api/mapping/wide_prod/${tahun}`)
+      .then(res => res.json())
+      .then(data => {
+        if (geojsonLayerLahan) {
+          map.removeLayer(geojsonLayerLahan);
+        }
+
+        geojsonLayerLahan = L.geoJSON(data, {
+          style: {
+            color: '#1f6b3a',
+            weight: 1,
+            fillColor: '#a1d99b',
+            fillOpacity: 0.6
+          },
+          onEachFeature: function (feature, layer) {
+            layer.bindPopup(`<b>${feature.properties.nm_kecamatan}</b>`);
+          }
+        }).addTo(mapLahan);
+
+        try {
+          mapLahan.fitBounds(geojsonLayerLahan.getBounds());
+        } catch (e) {
+          console.warn("Tidak bisa fitBounds, mungkin data kosong");
+        }
+      })
+      .catch(err => console.error('Gagal memuat GeoJSON:', err));
+  }
+
+  loadMapData(tahunSelectLahan.value);
+  tahunSelectLahan.addEventListener('change', function () {
+    loadMapData(this.value);
+  });
+</script>
+
+<script>
+  const tahunSelectLah = document.getElementById('tahunSelect');
+
+  function capitalizeWords(text) {
+    return text
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  function loadCentroidData(tahun) {
+    fetch(`http://127.0.0.1:8000/api/mapping/centroid_prod/${tahun}`)
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.getElementById('tableProduksi');
+        const thead = document.querySelector('#tableProduksi').closest('table').querySelector('thead tr');
+
+        // Kosongkan tabel
+        tbody.innerHTML = "";
+        thead.innerHTML = "";
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="100%">Tidak ada data</td></tr>`;
+          return;
+        }
+
+        // Ambil semua key komoditas (yang diawali centroid__)
+        const keys = Object.keys(data[0]).filter(k => k.startsWith("centroid__"));
+
+        // Buat header tabel dengan kapitalisasi
+        thead.innerHTML = `<th class="text-center px-4 py-2 whitespace-nowrap">Cluster</th>` + keys.map(k => {
+          const label = k.replace("centroid__", "").replace(/_/g, " ");
+          const capitalized = label.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+          return `<th class="text-center px-4 py-2 whitespace-nowrap">${capitalized}</th>`;
+        }).join("");
+
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          let cols = `<td class="text-center px-4 py-2 whitespace-nowrap">${row.cluster}</td>`;
+          keys.forEach(k => {
+            cols += `<td class="text-center px-4 py-2 whitespace-nowrap">${row[k] ?? "-"}</td>`;
+          });
+          tr.innerHTML = cols;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => console.error('Gagal memuat data centroid:', err));
+  }
+
+  // Load awal
+  loadCentroidData(tahunSelectLah.value);
+
+  // Event ketika tahun berubah
+  tahunSelectLah.addEventListener('change', function () {
+    loadCentroidData(this.value);
+  });
+</script>
+
+<script>
+  const tahunSelectLeb = document.getElementById('tahunSelect');
+
+  function capitalizeWords(text) {
+    return text
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  function loadLebarData(tahun) {
+    fetch(`http://127.0.0.1:8000/api/mapping/centroid_wide/${tahun}`)
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.getElementById('tableLahan');
+        const thead = document.querySelector('#tableLahan').closest('table').querySelector('thead tr');
+
+        // Kosongkan tabel
+        tbody.innerHTML = "";
+        thead.innerHTML = "";
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="100%" class="text-center">Tidak ada data</td></tr>`;
+          return;
+        }
+
+        // Ambil semua key komoditas (yang diawali centroid__)
+        const keys = Object.keys(data[0]).filter(k => k.startsWith("centroid__"));
+
+        // Buat header tabel dengan kapitalisasi
+        thead.innerHTML = `<th class="text-center px-4 py-2 whitespace-nowrap">Cluster</th>` + keys.map(k => {
+          const label = k.replace("centroid__", "").replace(/_/g, " ");
+          const capitalized = capitalizeWords(label);
+          return `<th class="text-center px-4 py-2 whitespace-nowrap">${capitalized}</th>`;
+        }).join("");
+
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          let cols = `<td class="text-center px-4 py-2 whitespace-nowrap">${row.cluster}</td>`;
+          keys.forEach(k => {
+            cols += `<td class="text-center px-4 py-2 whitespace-nowrap">${row[k] ?? "-"}</td>`;
+          });
+          tr.innerHTML = cols;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => console.error('Gagal memuat data centroid:', err));
+  }
+
+  // Load awal
+  loadLebarData(tahunSelectLeb.value);
+
+  // Event ketika tahun berubah
+  tahunSelectLeb.addEventListener('change', function () {
+    loadLebarData(this.value);
+  });
+</script>
+
+</body>
+</html>
