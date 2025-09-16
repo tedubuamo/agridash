@@ -1,0 +1,16 @@
+year,temperature,humidity,rainfall,category,label,region
+2020,24.2,74.0,277.2,holti,Bawang Merah,Mojokerto
+2020,24.2,74.0,277.2,holti,Cabai Rawit,Mojokerto
+2020,24.2,74.0,277.2,holti,Melon,Mojokerto
+2020,24.2,74.0,277.2,holti,Tomat,Mojokerto
+2021,25.0,71.5,224.9,holti,Bawang Merah,Mojokerto
+2021,25.0,71.5,224.9,holti,Cabai Rawit,Mojokerto
+2021,25.0,71.5,224.9,holti,Melon,Mojokerto
+2021,25.0,71.5,224.9,holti,Tomat,Mojokerto
+2022,27.6,71.6,195.1,holti,Bawang Merah,Mojokerto
+2022,27.6,71.6,195.1,holti,Melon,Mojokerto
+2022,27.6,71.6,195.1,holti,Tomat,Mojokerto
+2023,26.7,76.1,276.7,holti,Bawang Merah,Mojokerto
+2023,26.7,76.1,276.7,holti,Cabai Rawit,Mojokerto
+2023,26.7,76.1,276.7,holti,Melon,Mojokerto
+2023,26.7,76.1,276.7,holti,Tomat,Mojokerto

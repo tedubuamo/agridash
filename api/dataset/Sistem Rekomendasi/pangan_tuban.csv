@@ -1,0 +1,17 @@
+year,temperature,humidity,rainfall,category,label,region
+2020,25.8,79.6,227.7,pangan,Jagung,Tuban
+2020,25.8,79.6,227.7,pangan,Kacang Hijau,Tuban
+2020,25.8,79.6,227.7,pangan,Padi,Tuban
+2020,25.8,79.6,227.7,pangan,Ubi Kayu,Tuban
+2021,27.0,73.7,102.6,pangan,Jagung,Tuban
+2021,27.0,73.7,102.6,pangan,Kacang Hijau,Tuban
+2021,27.0,73.7,102.6,pangan,Padi,Tuban
+2021,27.0,73.7,102.6,pangan,Ubi Kayu,Tuban
+2022,28.1,76.6,264.3,pangan,Jagung,Tuban
+2022,28.1,76.6,264.3,pangan,Kacang Hijau,Tuban
+2022,28.1,76.6,264.3,pangan,Padi,Tuban
+2022,28.1,76.6,264.3,pangan,Ubi Kayu,Tuban
+2023,26.0,74.4,192.3,pangan,Jagung,Tuban
+2023,26.0,74.4,192.3,pangan,Kacang Hijau,Tuban
+2023,26.0,74.4,192.3,pangan,Padi,Tuban
+2023,26.0,74.4,192.3,pangan,Ubi Kayu,Tuban
