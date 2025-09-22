@@ -140,7 +140,7 @@
 <script>
   const ctxBlitar = document.getElementById('lineChartKab').getContext('2d');
 
-  fetch('http://127.0.0.1:8000/api/food/line')
+  fetch('https://agridash00.pythonanywhere.com/api/food/line')
     .then(response => response.json())
     .then(data => {
       new Chart(ctxBlitar, {
@@ -197,7 +197,7 @@
   let chartData = { labels: [], data: [] };
 
   function drawBarChart(tahun) {
-    fetch(`http://127.0.0.1:8000/api/food/bar/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com/api/food/bar/${tahun}`)
       .then(response => response.json())
       .then(data => {
         chartData = data;
@@ -283,7 +283,7 @@
 </script>
 
 <script>
-  fetch('http://127.0.0.1:8000/api/food/boxplot')
+  fetch('https://agridash00.pythonanywhere.com/api/food/boxplot')
     .then(response => response.json())
     .then(data => {
       const traces = data.map(item => ({
@@ -330,7 +330,7 @@
   }
 
   function loadGeojson(tahun) {
-    fetch(`http://127.0.0.1:8000/api/food/maps/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com/api/food/maps/${tahun}`)
       .then(response => response.json())
       .then(data => {
         if (geojsonLayer) {

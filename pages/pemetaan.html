@@ -196,7 +196,7 @@
   }
 
   function loadMapData(tahun) {
-    fetch(`http://127.0.0.1:8000/api/mapping/maps_prod/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com/api/mapping/maps_prod/${tahun}`)
       .then(res => res.json())
       .then(data => {
         if (geojsonLayer) {
@@ -244,7 +244,7 @@
   let geojsonLayerLahan; 
 
   function loadMapData(tahun) {
-    fetch(`http://127.0.0.1:8000/api/mapping/wide_prod/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com/api/mapping/wide_prod/${tahun}`)
       .then(res => res.json())
       .then(data => {
         if (geojsonLayerLahan) {
@@ -289,7 +289,7 @@
   }
 
   function loadCentroidData(tahun) {
-    fetch(`http://127.0.0.1:8000/api/mapping/centroid_prod/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com/api/mapping/centroid_prod/${tahun}`)
       .then(res => res.json())
       .then(data => {
         const tbody = document.getElementById('tableProduksi');
@@ -347,7 +347,7 @@
   }
 
   function loadLebarData(tahun) {
-    fetch(`http://127.0.0.1:8000/api/mapping/centroid_wide/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com/api/mapping/centroid_wide/${tahun}`)
       .then(res => res.json())
       .then(data => {
         const tbody = document.getElementById('tableLahan');
