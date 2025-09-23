@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --brand:#1f6b3a; --brand-700:#155b2f; }
+        :root { --brand:#276834; --brand-700:#276834; }
         html, body { height: 100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
         /* thin scroll */
         * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
@@ -34,12 +34,12 @@
 <div class="min-h-screen grid grid-cols-12 gap-0">
     <!-- Sidebar -->
     <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
-        <div class="flex items-center gap-">
-        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <div class="ml-10 flex items-center gap-4">
+        <div class="w-20 h-20 rounded overflow-hidden">
         <img src="assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
         </div>
 
-        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <div class="w-20 h-20 rounded overflow-hidden">
         <img src="assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
         </div>
         </div>
@@ -59,11 +59,18 @@
 
     <!-- Main -->
     <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4">
-        <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-[var(--brand)] p-4 rounded-xl">
-            <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-sm">
-            Dashboard Rekomendasi Komoditas dan Ketahanan Pangan Daerah - AgriDash
-            </h1>
-        </div>
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-1 bg-[var(--brand)] p-4 rounded-xl">
+        <!-- Judul utama -->
+        <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-sm">
+          Dasbor Analitik untuk Eksplorasi, Prediksi, dan Ketahanan Pangan </br> Daerah Kabupaten Blitar
+        </h1>
+
+        <!-- Brand di kanan -->
+        <span class="mr-12 text-[#facc15] text-3xl lg:text-6xl font-extrabold tracking-tight drop-shadow-sm">
+          Agri-Dash
+        </span>
+      </div>
+
 
         <div class="grid grid-cols-12 gap-4">
 
@@ -285,7 +292,7 @@
 
       async function loadInfoByYear(tahun) {
           try {
-              const res = await fetch(`https://agridash00.pythonanywhere.com/api/home/info/${tahun}`);
+              const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/info/${tahun}`);
               const data = await res.json();
 
               // Isi ke elemen HTML
@@ -301,7 +308,7 @@
 
       async function loadBarData() {
           tahun = document.getElementById("tahunSelect").value;
-          const res = await fetch(`https://agridash00.pythonanywhere.com/api/home/comparison/${tahun}`);
+          const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/comparison/${tahun}`);
           const data = await res.json();
 
           // Total luas panen & produksi
@@ -357,7 +364,7 @@
       let chart;
 
       async function loadChartByKomoditas(komoditas) {
-        const res = await fetch(`https://agridash00.pythonanywhere.com/api/home/harvest/${komoditas}`);
+        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/harvest/${komoditas}`);
         const data = await res.json();
         console.log("API response:", data);
         const labels = data.map(d => d.Year);
@@ -397,7 +404,7 @@
                 data: values,
                 borderColor: "#166534",
                 backgroundColor: "rgba(22, 101, 52, 0.2)",
-                tension: 0.3,
+                tension: 0,
                 fill: true,
                 pointRadius: 4,
                 pointBackgroundColor: "#166534"
@@ -439,7 +446,7 @@
           tahun = document.getElementById("tahunSelect").value;
         }
 
-        const res = await fetch(`https://agridash00.pythonanywhere.com/api/home/info/${tahun}`);
+        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/info/${tahun}`);
         const data = await res.json();
         const harvest = data.harvest;
 
@@ -535,7 +542,7 @@
           tahun = document.getElementById("tahunSelect").value;
         }
 
-        const res = await fetch(`https://agridash00.pythonanywhere.com/api/home/horticulture/${tahun}`);
+        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/horticulture/${tahun}`);
         const data = await res.json();
         const harvest = data.harvest;
 
@@ -661,7 +668,7 @@
         const yKey  = elYScatter.value;
 
         try {
-          const res = await fetch(`https://agridash00.pythonanywhere.com/api/home/scatter/${tahun}/${xKey}/${yKey}`);
+          const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/scatter/${tahun}/${xKey}/${yKey}`);
           const raw = await res.json();
 
           // pisahkan berdasarkan wilayah
@@ -827,7 +834,7 @@ async function loadSpiderChart() {
   }
 
   try {
-    const res = await fetch(`https://agridash00.pythonanywhere.com/api/home/spider/${tahun}/${kecamatanParam}/${komoditas}`);
+    const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/spider/${tahun}/${kecamatanParam}/${komoditas}`);
     const raw = await res.json();
     console.log("Spider Chart Data:", raw);
 

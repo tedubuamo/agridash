@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        :root { --brand:#1f6b3a; --brand-700:#155b2f; }
+        :root { --brand:#276834; --brand-700:#276834; }
         html, body { height: 100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
         * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
         *::-webkit-scrollbar { height: 8px; width: 8px; }
@@ -49,14 +49,13 @@
 
 <body class="bg-[var(--brand)]/95 min-h-full">
 <div class="min-h-screen grid grid-cols-12 gap-0">
-    <!-- Sidebar -->
     <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
-        <div class="flex items-center gap-">
-        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <div class="flex items-center gap-4 ml-10">
+        <div class="w-20 h-20 rounded overflow-hidden">
         <img src="/assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
         </div>
 
-        <div class="w-20 h-20 p-2 rounded overflow-hidden bg-white/10">
+        <div class="w-20 h-20 rounded overflow-hidden">
         <img src="/assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
         </div>
         </div>
@@ -68,21 +67,26 @@
               <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/pemetaan.html">🧭 <span>Pemetaan</span></a></li>
               <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/rekomendasi.html">✅ <span>Rekomendasi</span></a></li>
               <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/ketahanan.html">🛡️ <span>Ketahanan Pangan</span></a></li>
+              <button onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded">Logout</button> 
           </ul>
         </nav>
         <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
     </aside>
 
-    <!-- Main -->
     <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4">
-        <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-[var(--brand)] p-4 rounded-xl">
-            <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-sm">
-            Dashboard Rekomendasi Komoditas dan Ketahanan Pangan Daerah - AgriDash
-            </h1>
-        </div>
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-1 bg-[var(--brand)] p-4 rounded-xl">
+        <!-- Judul utama -->
+        <h1 class="text-white text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-sm">
+          Dasbor Analitik untuk Eksplorasi, Prediksi, dan Ketahanan Pangan </br> Daerah Kabupaten Blitar
+        </h1>
+
+        <!-- Brand di kanan -->
+        <span class="mr-12 text-[#facc15] text-3xl lg:text-6xl font-extrabold tracking-tight drop-shadow-sm">
+          Agri-Dash
+        </span>
+      </div>
 
         <div class="grid grid-cols-12 gap-4">
-            <!-- Filter Tahun -->
             <div class="col-span-2 bg-white border border-emerald-200 rounded-lg p-3">
             <label class="block text-sm font-bold text-emerald-800 mb-1">Pilih Tahun</label>
             <select id="tahunSelect" class="w-full border border-slate-300 rounded px-2 py-1 text-sm">
@@ -97,15 +101,14 @@
                 <option value="2026">2026</option>
             </select>
             </div>
-
             <!-- Legend Produksi -->
             <div class="col-span-4 bg-white border border-emerald-200 rounded-lg p-3 text-sm">
             <h3 class="font-bold text-center mb-2">- Dominasi Produksi -</h3>
             <div class="flex flex-wrap gap-3 justify-center">
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-600"></span>Padi</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-yellow-600"></span>Ubi Jalar</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-400"></span>Ubi Kayu, Kacang Tanah, & Kedelai</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-orange-400"></span>Jagung & Ubi Jalar</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#a1d99b]"></span>Cluster 0</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#ffeda0]"></span>Cluster 1</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#fc9272]"></span>Cluster 2</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#de2d26]"></span>Cluster 3</div>
             </div>
             </div>
 
@@ -113,9 +116,10 @@
             <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-3 text-sm">
             <h3 class="font-bold text-center mb-2">- Dominasi Luas Lahan Panen -</h3>
             <div class="flex flex-wrap gap-3 justify-center">
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-700"></span>Kubis, Tomat, Kacang Panjang, & Ketimun</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-yellow-500"></span>Jagung, Ubi Kayu, Kedelai, Kacang Hijau, & ...</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-400"></span>Kacang Tanah</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#a1d99b]"></span>Cluster 0</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#ffeda0]"></span>Cluster 1</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#fc9272]"></span>Cluster 2</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#de2d26]"></span>Cluster 3</div>
             </div>
             </div>
         </div>
@@ -179,11 +183,68 @@
 </div>
 
 <script>
-  const map = L.map('mapProduksi').setView([-7.5, 112], 11);
-  L.tileLayer('').addTo(map);
+    const map = L.map('mapProduksi').setView([-7.5, 112], 11);
+    L.tileLayer('').addTo(map);
 
-  const tahunSelect = document.getElementById('tahunSelect');
-  let geojsonLayer;
+    const tahunSelect = document.getElementById('tahunSelect');
+    let geojsonLayer;
+
+    function getColorByLabel(label) {
+      switch (label) {
+        case 0: return '#a1d99b';
+        case 1: return '#ffeda0';
+        case 2: return '#fc9272';
+        case 3: return '#de2d26';
+        default: return '#cccccc';
+      }
+    }
+
+    function loadMapData(tahun) {
+      fetch(`https://agridash00.pythonanywhere.com//api/mapping/maps_prod/${tahun}`)
+        .then(res => res.json())
+        .then(data => {
+          if (geojsonLayer) {
+            map.removeLayer(geojsonLayer);
+          }
+          geojsonLayer = L.geoJSON(data, {
+            style: function (feature) {
+              const labelValue = feature.properties.label;
+              return {
+                color: '#1f6b3a',
+                weight: 1,
+                fillColor: getColorByLabel(labelValue),
+                fillOpacity: 1
+              };
+            },
+            onEachFeature: function (feature, layer) {
+              layer.bindPopup(
+                `<b>${feature.properties.nm_kecamatan}</b><br>` +
+                `Metode: ${feature.properties.metode}<br>` +
+                `Cluster: ${feature.properties.cluster}<br>` +
+                `Komoditas Dominan: ${feature.properties.komoditas_dominan}`
+              );
+            }
+          }).addTo(map);
+          try {
+            map.fitBounds(geojsonLayer.getBounds());
+          } catch (e) {}
+        })
+        .catch(err => console.error(err));
+    }
+
+    loadMapData(tahunSelect.value);
+    tahunSelect.addEventListener('change', function () {
+      loadMapData(this.value);
+    });
+</script>
+
+
+<script>
+  const mapLahan = L.map('mapLahan').setView([-7.5, 112], 9);
+  L.tileLayer('').addTo(mapLahan);
+
+  const tahunSelectLahan = document.getElementById('tahunSelect');
+  let geojsonLayerLahan;
 
   function getColorByLabel(label) {
     switch (label) {
@@ -191,19 +252,19 @@
       case 1: return '#ffeda0'; // kuning
       case 2: return '#fc9272'; // merah muda
       case 3: return '#de2d26'; // merah tua
-      default: return '#cccccc'; // abu-abu jika tidak ada label
+      default: return '#cccccc'; // abu-abu default
     }
   }
 
   function loadMapData(tahun) {
-    fetch(`https://agridash00.pythonanywhere.com/api/mapping/maps_prod/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com//api/mapping/wide_prod/${tahun}`)
       .then(res => res.json())
       .then(data => {
-        if (geojsonLayer) {
-          map.removeLayer(geojsonLayer);
+        if (geojsonLayerLahan) {
+          mapLahan.removeLayer(geojsonLayerLahan);
         }
 
-        geojsonLayer = L.geoJSON(data, {
+        geojsonLayerLahan = L.geoJSON(data, {
           style: function (feature) {
             const labelValue = feature.properties.label;
             return {
@@ -214,52 +275,12 @@
             };
           },
           onEachFeature: function (feature, layer) {
-            layer.bindPopup(`
-              <b>${feature.properties.nm_kecamatan}</b><br>
-              Label: ${feature.properties.label}
-            `);
-          }
-        }).addTo(map);
-
-        try {
-          map.fitBounds(geojsonLayer.getBounds());
-        } catch (e) {
-          console.warn("Tidak bisa fitBounds, mungkin data kosong");
-        }
-      })
-      .catch(err => console.error('Gagal memuat GeoJSON:', err));
-  }
-
-  loadMapData(tahunSelect.value);
-  tahunSelect.addEventListener('change', function () {
-    loadMapData(this.value);
-});
-
-</script>
-
-<script>
-  const mapLahan = L.map('mapLahan').setView([-7.5, 112], 9);
-  L.tileLayer('').addTo(map);
-  const tahunSelectLahan = document.getElementById('tahunSelect');
-  let geojsonLayerLahan; 
-
-  function loadMapData(tahun) {
-    fetch(`https://agridash00.pythonanywhere.com/api/mapping/wide_prod/${tahun}`)
-      .then(res => res.json())
-      .then(data => {
-        if (geojsonLayerLahan) {
-          map.removeLayer(geojsonLayerLahan);
-        }
-
-        geojsonLayerLahan = L.geoJSON(data, {
-          style: {
-            color: '#1f6b3a',
-            weight: 1,
-            fillColor: '#a1d99b',
-            fillOpacity: 0.6
-          },
-          onEachFeature: function (feature, layer) {
-            layer.bindPopup(`<b>${feature.properties.nm_kecamatan}</b>`);
+            layer.bindPopup(
+              `<b>${feature.properties.nm_kecamatan}</b><br>` +
+              `Metode: ${feature.properties.metode}<br>` +
+              `Cluster: ${feature.properties.cluster}<br>` +
+              `Komoditas Dominan: ${feature.properties.komoditas_dominan}`
+            );
           }
         }).addTo(mapLahan);
 
@@ -278,6 +299,7 @@
   });
 </script>
 
+
 <script>
   const tahunSelectLah = document.getElementById('tahunSelect');
 
@@ -289,7 +311,7 @@
   }
 
   function loadCentroidData(tahun) {
-    fetch(`https://agridash00.pythonanywhere.com/api/mapping/centroid_prod/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com//api/mapping/centroid_prod/${tahun}`)
       .then(res => res.json())
       .then(data => {
         const tbody = document.getElementById('tableProduksi');
@@ -347,7 +369,7 @@
   }
 
   function loadLebarData(tahun) {
-    fetch(`https://agridash00.pythonanywhere.com/api/mapping/centroid_wide/${tahun}`)
+    fetch(`https://agridash00.pythonanywhere.com//api/mapping/centroid_wide/${tahun}`)
       .then(res => res.json())
       .then(data => {
         const tbody = document.getElementById('tableLahan');
@@ -394,5 +416,11 @@
   });
 </script>
 
+<script>
+  function logout() {
+    localStorage.removeItem("isLoggedIn");
+    window.location.href = "login.html";
+  }
+</script>
 </body>
 </html>

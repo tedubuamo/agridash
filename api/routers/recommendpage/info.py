@@ -34,7 +34,7 @@ def get_info(musim: str):
 @router.get("/horti/{musim}")
 def get_horti_data(musim: str):
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(base_dir, "../../dataset/SIstem Rekomendasi/new_data_with_predictions_horti.xlsx")
+    file_path = os.path.join(base_dir, "../../dataset/Sistem Rekomendasi/new_data_with_predictions_horti.xlsx")
 
     try:
         df = pd.read_excel(file_path)
@@ -48,15 +48,22 @@ def get_horti_data(musim: str):
         raise HTTPException(status_code=404, detail=f"Tidak ada data untuk musim '{musim}'")
 
     komoditas_map = {
+        "Anggur": ["Probability_anggur"],
+        "Apel": ["Probability_Apel"],
+        "Bawang Merah": ["Probability_Bawang Merah"],
         "Cabai Besar": ["Probability_Cabai Besar"],
         "Cabai Rawit": ["Probability_Cabai Rawit"],
-        "Bawang Merah": ["Probability_Bawang Merah"],
-        "Tomat": ["Probability_Tomat"],
-        "Kubis": ["Probability_Kubis"],
+        "Jeruk": ["Probability_Jeruk"],
         "Kacang Panjang": ["Probability_Kacang Panjang"],
+        "Kentang": ["Probability_Kentang"],
+        "Kopi": ["Probability_Kopi"],
+        "Kubis": ["Probability_Kubis"],
         "Melon": ["Probability_Melon"],
+        "Pepaya": ["Probability_Pepaya"],
+        "Pisang": ["Probability_Pisang"],
         "Semangka": ["Probability_Semangka"],
-        "Kentang": ["Probability_Kentang"]
+        "Tomat": ["Probability_Tomat"],
+        "Mangga": ["Probability_mangga"]
     }
 
     result = {kom: [] for kom in komoditas_map}
