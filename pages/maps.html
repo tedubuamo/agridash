@@ -49,38 +49,40 @@
 
 <body class="bg-[var(--brand)]/95 min-h-full">
 <div class="min-h-screen grid grid-cols-12 gap-0">
-    <!-- Sidebar -->
-    <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
-        <div class="flex items-center gap-4 ml-10">
-        <div class="w-20 h-20 rounded overflow-hidden ">
-        <img src="/assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
-        </div>
+  <!-- Sidebar -->
+  <aside id="sidebar" class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4 relative transition-all duration-300">
+    <div class="ml-10 flex items-center gap-4 mt-10">
+      <div class="w-20 h-20 rounded overflow-hidden">
+        <img src="../assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
+      </div>
+      <div class="w-20 h-20 rounded overflow-hidden">
+        <img src="../assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
+      </div>
+    </div>
 
-        <div class="w-20 h-20 rounded overflow-hidden ">
-        <img src="/assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
-        </div>
-        </div>
-        <nav class="mt-4 flex-1">
-          <ul class="space-y-2 text-base">
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/index.html">🏠 <span>Home</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/maps.html">🗺️ <span>Maps Kecamatan</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/prediksi.html">📈 <span>Prediksi</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/pemetaan.html">🧭 <span>Pemetaan</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/pemetaan.html">✅ <span>Rekomendasi</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="/pages/ketahanan.html">🛡️ <span>Ketahanan Pangan</span></a></li>
-              <button onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded">Logout</button> 
-          </ul>
-        </nav>
-        <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
-    </aside>
+    <nav class="flex-1">
+      <ul class="space-y-2 text-base">
+        <li><a href="../index.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">🏠 <span>Home</span></a></li>
+        <li><a href="maps.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">🗺️ <span>Maps Kecamatan</span></a></li>
+        <li><a href="prediksi.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">📈 <span>Prediksi</span></a></li>
+        <li><a href="pemetaan.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">🧭 <span>Pemetaan</span></a></li>
+        <li><a href="rekomendasi.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">✅ <span>Rekomendasi</span></a></li>
+        <li><a href="ketahanan.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">🛡️ <span>Ketahanan Pangan</span></a></li>
+        <button onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded">Logout</button>
+      </ul>
+    </nav>
+    <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
+  </aside>
 
-    <!-- Main -->
-    <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4">
-    <div class="flex flex-col lg:flex-row lg:justify-end bg-[var(--brand)] p-4 rounded-xl">
-      <!-- Bagian kanan -->
+  <!-- Main -->
+  <main id="main-content" class="col-span-10 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4 transition-all duration-1000">
+    <div class="flex items-center justify-between bg-[var(--brand)] p-4 rounded-xl">
+      <button id="menu-toggle" class="text-white text-3xl px-3 py-2 rounded-md hover:bg-green-700 focus:outline-none">
+        ☰
+      </button>
       <div class="flex flex-col space-y-1 items-end text-right mr-2">
         <h1 class="font-extrabold tracking-tight drop-shadow-sm">
-          <span class="text-[#facc15] text-4xl lg:text-4xl mr-2">Agri-Dash</span>
+          <span class="text-[#facc15] text-4xl mr-2">Agri-Dash</span>
           <span class="text-white text-xl lg:text-2xl">Kabupaten Blitar</span>
         </h1>
         <p class="text-white text-base lg:text-lg font-medium drop-shadow-sm">
@@ -232,14 +234,14 @@
 
               <!-- Produksi Tertinggi -->
               <div class="col-span-12 md:col-span-4 bg-white rounded-2xl shadow border border-emerald-100 p-4">
-                <h3 class="text-center font-bold text-emerald-800 mb-2">Produksi Tertinggi</h3>
-                <ul id="highestList" class="space-y-1 text-center text-xl"></ul>
+                <h3 class="text-center font-bold text-emerald-900 mb-2">Produksi Tertinggi</h3>
+                <ul id="highestList" class="space-y-1 text-center text-2xl"></ul>
               </div>
 
               <!-- Produksi Terendah -->
               <div class="col-span-12 md:col-span-4 bg-white rounded-2xl shadow border border-emerald-100 p-4">
-                <h3 class="text-center font-bold text-emerald-800 mb-2">Produksi Terendah</h3>
-                <ul id="lowestList" class="space-y-1 text-center text-xl"></ul>
+                <h3 class="text-center font-bold text-red-900 mb-2">Produksi Terendah</h3>
+                <ul id="lowestList" class="space-y-1 text-center text-2xl"></ul>
               </div>
             </div>
             <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4">
@@ -265,7 +267,7 @@
 
       async function loadBarData() {
           tahun = document.getElementById("tahunSelect").value;
-          const res = await fetch(`https://agridash00.pythonanywhere.com//api/maps/comparison/${tahun}`);
+          const res = await fetch(`http://127.0.0.1:8000/api/maps/comparison/${tahun}`);
           const data = await res.json();
           const totalLuas = data.reduce((sum, d) => sum + d.luas_panen, 0);
           const totalProduksi = data.reduce((sum, d) => sum + d.produksi, 0);
@@ -308,7 +310,7 @@
       
       async function loadSortData(tahun) {
         try {
-          const response = await fetch(`https://agridash00.pythonanywhere.com//api/maps/sort/${tahun}`);
+          const response = await fetch(`http://127.0.0.1:8000/api/maps/sort/${tahun}`);
           const data = await response.json();
 
           const highestList = document.getElementById("highestList");
@@ -317,21 +319,26 @@
           highestList.innerHTML = "";
           lowestList.innerHTML = "";
 
-          // === Render Produksi Tertinggi ===
-          data.highest.forEach((item, index) => {
-            const li = document.createElement("li");
-            li.className = `font-bold ${index < 2 ? 'text-green-600' : 'text-red-500'}`;
-            li.innerHTML = `${item.total.toLocaleString()} Kw<br>${item.District}`;
-            highestList.appendChild(li);
-          });
+// === Render Produksi Tertinggi ===
+const greenGradient = ["text-green-900", "text-green-800", "text-green-700", "text-green-500", "text-green-400"];
 
-          // === Render Produksi Terendah ===
-          data.lowest.forEach((item, index) => {
-            const li = document.createElement("li");
-            li.className = `font-bold ${index < 2 ? 'text-red-500' : 'text-green-600'}`;
-            li.innerHTML = `${item.total.toLocaleString()} Kw<br>${item.District}`;
-            lowestList.appendChild(li);
-          });
+data.highest.forEach((item, index) => {
+  const li = document.createElement("li");
+  li.className = `font-bold ${greenGradient[index]}`;
+  li.innerHTML = `${item.total.toLocaleString()} Kw<br>${item.District}`;
+  highestList.appendChild(li);
+});
+
+// === Render Produksi Terendah ===
+const redGradient = ["text-red-400", "text-red-500", "text-red-700", "text-red-800", "text-red-900"];
+
+data.lowest.forEach((item, index) => {
+  const li = document.createElement("li");
+  li.className = `font-bold ${redGradient[index]}`;
+  li.innerHTML = `${item.total.toLocaleString()} Kw<br>${item.District}`;
+  lowestList.appendChild(li);
+});
+
         } catch (error) {
           console.error("Gagal load data sort:", error);
         }
@@ -384,7 +391,7 @@ function updateLegend(min, max) {
 
 async function loadMap(tahun, daerah, komoditas) {
   try {
-    const res = await fetch(`https://agridash00.pythonanywhere.com//api/maps/maps/${tahun}/${daerah}/${komoditas}`);
+    const res = await fetch(`http://127.0.0.1:8000/api/maps/maps/${tahun}/${daerah}/${komoditas}`);
     const data = await res.json();
 
     if (currentLayer) map.removeLayer(currentLayer);
@@ -491,7 +498,7 @@ document.getElementById("tahunSelect").addEventListener("change", function() {
         }
 
         async function loadDonut(tahun, daerah, komoditas) {
-          const res = await fetch(`https://agridash00.pythonanywhere.com//api/maps/pieMaps/${tahun}/${daerah}/${komoditas}`);
+          const res = await fetch(`http://127.0.0.1:8000/api/maps/pieMaps/${tahun}/${daerah}/${komoditas}`);
           const json = await res.json();
 
           if (json.error) {
@@ -552,5 +559,16 @@ document.getElementById("tahunSelect").addEventListener("change", function() {
     window.location.href = "login.html";
   }
 </script>
+<script>
+  const toggleBtn = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main-content');
+
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    main.classList.toggle('lg:col-span-10');
+    main.classList.toggle('col-span-12');
+  });
+</script> 
 </body>
 </html>
