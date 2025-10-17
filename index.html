@@ -1,69 +1,64 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Agri‑Dash – Rekomendasi Komoditas & Ketahanan Pangan</title>
-    <!-- TailwindCSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --brand:#276834; --brand-700:#276834; }
-        html, body { height: 100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
-        /* thin scroll */
-        * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
-        *::-webkit-scrollbar { height: 8px; width: 8px; }
-        *::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:9999px; }
-
-        .sidebar-active {
-          background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .chart-pangan {
-          width: 900px;
-          margin: 20px auto;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agri‑Dash – Rekomendasi Komoditas & Ketahanan Pangan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    :root { --brand:#276834; }
+    html, body { height: 100%; font-family: Inter, ui-sans-serif, system-ui; }
+    .transition-all { transition: all 0.3s ease-in-out; }
+  </style>
 </head>
 
 <body class="bg-[var(--brand)]/95 min-h-full">
 <div class="min-h-screen grid grid-cols-12 gap-0">
-    <!-- Sidebar -->
-    <aside class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4">
-        <div class="ml-10 flex items-center gap-4">
-        <div class="w-20 h-20 rounded overflow-hidden">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="col-span-12 lg:col-span-2 bg-[var(--brand)] text-white p-4 lg:p-6 flex flex-col gap-4 relative transition-all duration-300">
+    <div class="ml-10 flex items-center gap-4 mt-10">
+      <div class="w-20 h-20 rounded overflow-hidden">
         <img src="assets/logo_pens.png" alt="Profile" class="w-full h-full object-cover">
-        </div>
-
-        <div class="w-20 h-20 rounded overflow-hidden">
+      </div>
+      <div class="w-20 h-20 rounded overflow-hidden">
         <img src="assets/Kabupaten_Blitar.jpeg" alt="Profile" class="w-full h-full object-cover">
-        </div>
-        </div>
-        <nav class="mt-4 flex-1">
-          <ul class="space-y-2 text-base">
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="index.html">🏠 <span>Home</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/maps.html">🗺️ <span>Maps Kecamatan</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/prediksi.html">📈 <span>Prediksi</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/pemetaan.html">🧭 <span>Pemetaan</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/rekomendasi.html">✅ <span>Rekomendasi</span></a></li>
-              <li><a class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700 hover:translate-x-2 transition duration-200 ease-in-out transform" href="pages/ketahanan.html">🛡️ <span>Ketahanan Pangan</span></a></li>
-              <button onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded">Logout</button>  
-          </ul>
-        </nav>
-        <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
-    </aside>
+      </div>
+    </div>
 
-    <!-- Main -->
-    <main class="col-span-12 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4">
-    <div class="flex flex-col lg:flex-row lg:justify-end bg-[var(--brand)] p-4 rounded-xl">
-      <!-- Bagian kanan -->
+    <nav class="flex-1">
+      <ul class="space-y-2 text-base">
+        <li><a href="index.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">🏠 <span>Home</span></a></li>
+        <li><a href="pages/maps.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">🗺️ <span>Maps Kecamatan</span></a></li>
+        <li><a href="pages/prediksi.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">📈 <span>Prediksi</span></a></li>
+        <li><a href="pages/pemetaan.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">🧭 <span>Pemetaan</span></a></li>
+        <li><a href="pages/rekomendasi.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">✅ <span>Rekomendasi</span></a></li>
+        <li><a href="pages/ketahanan.html" class="flex items-center space-x-2 py-2 px-3 rounded-lg hover:bg-green-700">🛡️ <span>Ketahanan Pangan</span></a></li>
+        <button onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded">Logout</button>
+      </ul>
+    </nav>
+    <p class="text-white/70 text-l text-center">© Agri‑Dash</p>
+  </aside>
+  <!-- Main -->
+  <main id="main-content" class="col-span-10 lg:col-span-10 bg-[#e8efe9] p-4 lg:p-6 space-y-4 transition-all duration-1000">
+    <!-- Header -->
+    <div class="flex items-center justify-between bg-[var(--brand)] p-4 rounded-xl">
+      <button id="menu-toggle" class="text-white text-3xl px-3 py-2 rounded-md hover:bg-green-700 focus:outline-none">
+        ☰
+      </button>
       <div class="flex flex-col space-y-1 items-end text-right mr-2">
         <h1 class="font-extrabold tracking-tight drop-shadow-sm">
-          <span class="text-[#facc15] text-4xl lg:text-4xl mr-2">Agri-Dash</span>
+          <span class="text-[#facc15] text-4xl mr-2">Agri-Dash</span>
           <span class="text-white text-xl lg:text-2xl">Kabupaten Blitar</span>
         </h1>
         <p class="text-white text-base lg:text-lg font-medium drop-shadow-sm">
@@ -72,9 +67,14 @@
       </div>
     </div>
 
-        <div class="grid grid-cols-12 gap-4">
+    <!-- Sub-menu Tabs -->
+    <div class="flex space-x-4 mt-4">
+      <button id="tab-ringkasan" class="px-4 py-2 bg-[var(--brand)] text-white rounded-md hover:bg-green-700">Ringkasan & Tren</button>
+      <button id="tab-distribusi" class="px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400">Distribusi & Perbandingan</button>
+    </div>
 
-        <!-- KIRI -->
+      <!-- Konten Ringkasan & Tren -->
+      <div id="content-ringkasan" class="mt-4">
         <div class="col-span-12 xl:col-span-6 space-y-4">
             <div class="flex flex-col md:flex-row gap-4">
             <!-- Filter Tahun -->
@@ -87,6 +87,15 @@
                       <option value="2021">2021</option>
                       <option value="2022">2022</option>
                       <option value="2023">2023</option>
+                      <option value="2024">2024</option>
+                      <option value="2025">2025</option>
+                  </select>
+            </div>
+            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4 w-full md:w-1/4">
+                <label class="text-emerald-800 font-bold block mb-1 text-sm">Pilih Komoditas</label>
+                  <select id="komoditasSelect" class="border border-slate-200 rounded-lg px-2 py-1 text-sm w-full">
+                      <option value="Pangan">Pangan</option>
+                      <option value="Hortikultura">Hortikultura</option>
                   </select>
             </div>
             <!-- Kartu 1 -->
@@ -109,28 +118,8 @@
                 <div id="chart-container" class="grid grid-cols-12 gap-4"></div>
                 <div class="mt-3 flex justify-between text-xs text-slate-500"><span>Luas Panen (Ha)</span><span>Produksi (Kw)</span></div>
             </div>
-            
-            <div class="col-span-12 xl:col-span-12 bg-white rounded-2xl shadow border border-emerald-100 p-4 h-[300px]">
-              <h3 class="font-semibold text-emerald-800 mb-4">Persentase Luas Panen Komoditas Tanaman Holtikultura</h3>
-              <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                <!-- Bagian Bar -->
-                <div class="w-full md:w-3/4 flex items-center">
-                  <canvas id="hortiChart"></canvas>
-                </div>
-
-                <!-- Bagian Legend -->
-                <div class="w-full md:w-1/4 flex flex-col justify-center">
-                  <ul id="hortiLegend" class="space-y-2 text-sm"></ul>
-                </div>
-              </div>
-            </div>
           </div>
-
-        <!-- KANAN -->
-        <div class="col-span-12 xl:col-span-6 space-y-4">
-
-            <!-- Line Chart -->
-            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4">
+        <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4 mt-4">
               <!-- Header + Filter -->
               <div class="flex items-center justify-between mb-4">
                 <h2 id="luas-panen-komoditas" class="text-lg font-bold text-emerald-800">
@@ -138,14 +127,13 @@
                 </h2>
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-slate-500">Komoditas</span>
-                  <select id="komoditasSelect" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
+                  <select id="komoditiSelect" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
                     <option value="r_onions">Bawang Merah</option>
                     <option value="rice">Padi</option>
                     <option value="l_chilies">Cabai Besar</option>
                     <option value="cayenne">Cabai Rawit</option>
                     <option value="corn">Jagung</option>
-                    <option value="g_beans">Kacang Hijau</option>
-                    <option value="l_beans">Kacang Panjang</option>
+                    <option value="g_beans">Kacang Panjang</option>
                     <option value="peanuts">Kacang Tanah</option>
                     <option value="soybeans">Kedelai</option>
                     <option value="cassava">Ketela Pohon</option>
@@ -162,201 +150,292 @@
                 <canvas id="chartKomoditas"></canvas>
               </div>
             </div>
+      </div>
 
-          <!-- Scatter & Radar -->
-          <div class="grid grid-cols-12 gap-4">
-            
-            <!-- Scatter Chart -->
-            <div class="col-span-12 md:col-span-6 bg-white rounded-2xl shadow border border-emerald-100 p-4">
-              <h2 class="text-lg font-bold text-emerald-800">Sebaran Produksi Tanaman Pangan</h2>
+        <!-- Konten Distribusi & Perbandingan -->
+      <div id="content-distribusi" class="mt-4 hidden">
+        <!-- Grid 2 kolom -->
+        <div class="grid grid-cols-2 gap-4">
+          
+          <!-- Scatter Chart -->
+          <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4">
+            <!-- Header + Filter dalam satu baris -->
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-bold text-emerald-800">
+                Sebaran Produksi Tanaman
+              </h2>
 
               <!-- Pilihan Axis -->
-              <div class="flex flex-wrap items-center gap-4 mt-4 mb-4">
-                <div class="flex items-center gap-2">
-                  <label class="text-sm text-slate-500">Pilih X Axis</label>
+              <div class="flex items-center gap-2">
+                <div class="flex items-center gap-0">
+                  <label class="text-sm text-slate-500 mr-2">Pilih X Axis</label>
                   <select id="xAxisSelectScatter" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
-                    <option value="rice">Padi</option>
-                    <option value="corn">Jagung</option>
-                    <option value="peanuts">Kacang Tanah</option>
-                    <option value="soybeans">Kedelai</option>
-                    <option value="cassava">Ketela Pohon</option>
-                    <option value="swpot">Ketela Rambat</option>
+                  <option value="rice">Padi</option>
+                  <option value="corn">Jagung</option>
+                  <option value="peanuts">Kacang Tanah</option>
+                  <option value="soybeans">Kedelai</option>
+                  <option value="cassava">Ketela Pohon</option>
+                  <option value="swpot">Ketela Rambat</option>
+                  <option value="g_beans">Kacang Panjang</option>
+                  <option value="r_onions">Bawang Merah</option>
+                  <option value="l_chilies">Cabai Besar</option>
+                  <option value="cayenne">Cabai Rawit</option>
+                  <option value="cabbage">Kubis</option>
+                  <option value="cucumber">Timun</option>
+                  <option value="tomatoes">Tomat</option>
                   </select>
                 </div>
-                <div class="flex items-center gap-2 mb-4">
-                  <label class="text-sm text-slate-500">Pilih Y Axis</label>
+                <div class="flex items-center gap-0">
+                  <label class="text-sm text-slate-500 mr-2">Pilih Y Axis</label>
                   <select id="yAxisSelectScatter" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
-                    <option value="rice">Padi</option>
-                    <option value="corn">Jagung</option>
-                    <option value="peanuts">Kacang Tanah</option>
-                    <option value="soybeans">Kedelai</option>
-                    <option value="cassava">Ketela Pohon</option>
-                    <option value="swpot">Ketela Rambat</option>
+                  <option value="rice">Padi</option>
+                  <option value="corn">Jagung</option>
+                  <option value="peanuts">Kacang Tanah</option>
+                  <option value="soybeans">Kedelai</option>
+                  <option value="cassava">Ketela Pohon</option>
+                  <option value="swpot">Ketela Rambat</option>
+                  <option value="g_beans">Kacang Panjang</option>
+                  <option value="r_onions">Bawang Merah</option>
+                  <option value="l_chilies">Cabai Besar</option>
+                  <option value="cayenne">Cabai Rawit</option>
+                  <option value="cabbage">Kubis</option>
+                  <option value="cucumber">Timun</option>
+                  <option value="tomatoes">Tomat</option>
                   </select>
                 </div>
-              </div>
-
-              <!-- Scatter Chart -->
-              <div class="h-48 relative bg-emerald-50 rounded-lg">
-                <div class="absolute left-4 right-4 top-4 bottom-4">
-                  <canvas id="scatterChart"></canvas>
-                </div>
-              </div>
-
-              <!-- Legend -->
-              <div class="flex items-center gap-3 mt-3 text-xs">
-                <span class="inline-flex items-center gap-1">
-                  <span class="w-3 h-3 rounded-full bg-black"></span> Wilayah
-                </span>
-                <span class="px-2 py-0.5 rounded bg-orange-100 text-orange-800">Selatan</span>
-                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Utara</span>
               </div>
             </div>
 
-            <!-- Produksi Komoditas Pangan -->
-            <div class="col-span-12 md:col-span-6 bg-white rounded-2xl shadow border border-emerald-100 p-4">
-              <h2 class="text-lg font-bold text-emerald-800 mb-2">Produksi Komoditas Pangan</h2>
-                
-                <div class="flex justify-center gap-2">
-                  <!-- Pilih Tahun -->
-                  <select id="tahunFilterScatter" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
-                    <option value="2018">2018</option>
-                    <option value="2019">2019</option>
-                    <option value="2020">2020</option>
-                    <option value="2021">2021</option>
-                    <option value="2022">2022</option>
-                    <option value="2023">2023</option>
-                  </select>
-
-                  <div class="relative w-[160px]">
-                    <button id="kecamatanDropdownBtn" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-sm flex justify-between items-center">
-                      <span id="kecamatanDropdownLabel">(All)</span>
-                      <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                      </svg>
-                    </button>
-
-                    <div id="kecamatanDropdownMenu" class="hidden absolute z-10 mt-1 w-full bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-auto text-sm">
-                    </div>
-                  </div>
-
-                  <!-- Pilih Komoditas -->
-                  <select id="komoditasFilterScatter" class="border border-slate-200 rounded-lg py-1 px-1 text-sm">
-                    <option value="rice">Padi</option>
-                    <option value="corn">Jagung</option>
-                    <option value="peanuts">Kacang Tanah</option>
-                    <option value="soybeans">Kedelai</option>
-                    <option value="cassava">Ketela Pohon</option>
-                    <option value="swpot">Ketela Rambat</option>
-                  </select>
-                </div>
-              
-                <div class="h-72 flex items-center justify-center">
-                  <canvas id="spiderChart"></canvas>
-                </div>
+            <!-- Scatter Chart -->
+            <div class="h-[350px] relative bg-emerald-50 rounded-lg">
+              <div class="absolute left-4 right-4 top-4 bottom-4">
+                <canvas id="scatterChart"></canvas>
+              </div>
             </div>
 
-            <div class="col-span-12 xl:col-span-12 bg-white rounded-2xl shadow border border-emerald-100 p-4 h-[300px]">
-              <h3 class="font-semibold text-emerald-800 mb-4">Persentase Luas Panen Komoditas Tanaman Pangan</h3>
+            <!-- Legend -->
+            <div class="flex items-center gap-3 mt-3 text-xs">
+              <span class="inline-flex items-center gap-1">
+                <span class="w-3 h-3 rounded-full bg-black"></span> Wilayah
+              </span>
+              <span class="px-2 py-0.5 rounded bg-orange-100 text-orange-800">Selatan</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Utara</span>
+            </div>
+          </div>
 
+          <!-- Produksi Komoditas Pangan -->
+          <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4">
+            <!-- Header + Filter dalam satu baris -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+              <!-- Judul -->
+              <h2 class="text-lg font-bold text-emerald-800">
+                Produksi Komoditas Kecamatan
+              </h2>
+
+              <!-- Filter -->
+              <div class="flex flex-wrap items-center gap-2 mt-2 md:mt-0">
+                <!-- Pilih Tahun -->
+                <select id="tahunFilterScatter" class="border border-slate-200 rounded-lg px-2 py-1 text-sm">
+                  <option value="2018">2018</option>
+                  <option value="2019">2019</option>
+                  <option value="2020">2020</option>
+                  <option value="2021">2021</option>
+                  <option value="2022">2022</option>
+                  <option value="2023">2023</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                </select>
+
+                <!-- Dropdown Kecamatan -->
+                <div class="relative w-[160px]">
+                  <button id="kecamatanDropdownBtn" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-sm flex justify-between items-center">
+                    <span id="kecamatanDropdownLabel">(All)</span>
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div id="kecamatanDropdownMenu" class="hidden absolute z-10 mt-1 w-full bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-auto text-sm"></div>
+                </div>
+
+                <!-- Pilih Komoditas -->
+                <select id="komoditasFilterScatter" class="border border-slate-200 rounded-lg py-1 px-1 text-sm">
+                  <option value="rice">Padi</option>
+                  <option value="corn">Jagung</option>
+                  <option value="peanuts">Kacang Tanah</option>
+                  <option value="soybeans">Kedelai</option>
+                  <option value="cassava">Ketela Pohon</option>
+                  <option value="swpot">Ketela Rambat</option>
+                  <option value="g_beans">Kacang Panjang</option>
+                  <option value="r_onions">Bawang Merah</option>
+                  <option value="l_chilies">Cabai Besar</option>
+                  <option value="cayenne">Cabai Rawit</option>
+                  <option value="cabbage">Kubis</option>
+                  <option value="cucumber">Timun</option>
+                  <option value="tomatoes">Tomat</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="h-[350px] flex items-center justify-center mt-10">
+              <canvas id="spiderChart"></canvas>
+            </div>
+          </div>
+          </div>
+
+          <!-- Grid 2 kolom untuk menaruh dua container sejajar -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            
+            <!-- Persentase Luas Panen Komoditas Tanaman Pangan -->
+            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4 h-[300px]">
+              <h3 class="font-semibold text-lg text-emerald-800 mb-4">
+                Persentase Luas Panen Komoditas Tanaman Pangan
+              </h3>
               <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                <!-- Bagian Bar -->
-                <div class="w-full md:w-3/4 flex items-center">
-                  <canvas id="harvestChart"></canvas>
+                <div class="w-3/5 md:w-3/5 flex items-center">
+                  <canvas id="harvestChart" class="h-[100%]"></canvas>
                 </div>
-
-                <!-- Bagian Legend -->
-                <div class="w-full md:w-1/4 flex flex-col justify-center">
+                <div class="ml-10 w-full md:w-2/5 flex flex-col justify-center">
                   <ul id="harvestLegend" class="space-y-2 text-sm"></ul>
                 </div>
               </div>
             </div>
+
+            <!-- Persentase Luas Panen Komoditas Tanaman Hortikultura -->
+            <div class="bg-white rounded-2xl shadow border border-emerald-100 p-4 h-[300px]">
+              <h3 class="font-semibold text-lg text-emerald-800 mb-4">
+                Persentase Luas Panen Komoditas Tanaman Hortikultura
+              </h3>
+              <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                <div class="w-3/5 md:w-3/5 flex items-center">
+                  <canvas id="hortiChart" class="h-[100%]"></canvas>
+                </div>
+                <div class="ml-10 w-full md:w-2/5 flex flex-col justify-center">
+                  <ul id="hortiLegend" class="space-y-2 text-sm"></ul>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        </div>
-    </main>
-</div>
+          </div>
+      </div>
+    </div>
+  </div>
+</main>
 
 <script>
+  const tabRingkasan = document.getElementById('tab-ringkasan');
+  const tabDistribusi = document.getElementById('tab-distribusi');
+  const contentRingkasan = document.getElementById('content-ringkasan');
+  const contentDistribusi = document.getElementById('content-distribusi');
 
-      const menuItems = document.querySelectorAll("nav ul li a");
+  tabRingkasan.addEventListener('click', () => {
+    contentRingkasan.classList.remove('hidden');
+    contentDistribusi.classList.add('hidden');
+    tabRingkasan.classList.add('bg-[var(--brand)]','text-white');
+    tabRingkasan.classList.remove('bg-gray-300','text-black');
+    tabDistribusi.classList.add('bg-gray-300','text-black');
+    tabDistribusi.classList.remove('bg-[var(--brand)]','text-white');
+  });
 
-      menuItems.forEach(item => {
-        item.addEventListener("click", function() {
-          // hapus class active dari semua
-          menuItems.forEach(el => el.classList.remove("sidebar-active"));
-          // tambahkan ke yang diklik
-          this.classList.add("sidebar-active");
-        });
-      });
+  tabDistribusi.addEventListener('click', () => {
+    contentRingkasan.classList.add('hidden');
+    contentDistribusi.classList.remove('hidden');
+    tabDistribusi.classList.add('bg-[var(--brand)]','text-white');
+    tabDistribusi.classList.remove('bg-gray-300','text-black');
+    tabRingkasan.classList.add('bg-gray-300','text-black');
+    tabRingkasan.classList.remove('bg-[var(--brand)]','text-white');
+  });
+</script>
+<script>
+  const toggleBtn = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main-content');
 
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    main.classList.toggle('lg:col-span-10');
+    main.classList.toggle('col-span-12');
+  });
+</script> 
+
+<script>
       async function loadInfoByYear(tahun) {
-          try {
-              const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/info/${tahun}`);
-              const data = await res.json();
+        try {
+          const komoditas = document.getElementById("komoditasSelect").value;
+          const res = await fetch(`http://127.0.0.1:8000/api/home/info/${tahun}/${komoditas}`);
+          const data = await res.json();
 
-              // Isi ke elemen HTML
-              document.getElementById('luasPanen').textContent =
-                  data.harvest.produksi_panen.toLocaleString('id-ID') + ' Ha';
+          // Isi ke elemen HTML
+          document.getElementById('luasPanen').textContent =
+            data.harvest.produksi_panen.toLocaleString('id-ID') + ' Ha';
 
-              document.getElementById('produksiPangan').textContent =
-                  data.harvest_production_pangan.produksi_panen.toLocaleString('id-ID') + ' Kw';
-          } catch (err) {
-              console.error('Gagal memuat data:', err);
-          }
+          document.getElementById('produksiPangan').textContent =
+            data.harvest_production.produksi_panen.toLocaleString('id-ID') + ' Kw';
+
+        } catch (err) {
+          console.error('Gagal memuat data:', err);
+        }
       }
 
       async function loadBarData() {
-          tahun = document.getElementById("tahunSelect").value;
-          const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/comparison/${tahun}`);
-          const data = await res.json();
+        const komoditas = document.getElementById("komoditasSelect").value;
+        const tahun = document.getElementById("tahunSelect").value;
+        const res = await fetch(`http://127.0.0.1:8000/api/home/comparison/${tahun}/${komoditas}`);
+        const data = await res.json();
 
-          // Total luas panen & produksi
-          const totalLuas = data.reduce((sum, d) => sum + d.luas_panen, 0);
-          const totalProduksi = data.reduce((sum, d) => sum + d.produksi, 0);
+        // Cari nilai maksimum untuk normalisasi panjang bar
+        const maxLuasPanen = Math.max(...data.map(d => d.luas_panen));
+        const maxProduksi = Math.max(...data.map(d => d.produksi));
 
-          // Cari nilai maksimum untuk normalisasi panjang bar
-          const maxLuasPanen = Math.max(...data.map(d => d.luas_panen));
-          const maxProduksi = Math.max(...data.map(d => d.produksi));
+        let htmlKiri = `<div class="col-span-6 space-y-2">`;
+        let htmlKanan = `<div class="col-span-6 space-y-2">`;
 
-          let htmlKiri = `<div class="col-span-6 space-y-2">`;
-          let htmlKanan = `<div class="col-span-6 space-y-2">`;
+        data.forEach(item => {
+          const persenProduksi = ((item.produksi / maxProduksi) * 100).toFixed(1);
+          const persenLuas = ((item.luas_panen / maxLuasPanen) * 100).toFixed(1);
 
-          data.forEach(item => {
-              const persenProduksi = ((item.produksi / maxProduksi) * 100).toFixed(1);
-              const persenLuas = ((item.luas_panen / maxLuasPanen) * 100).toFixed(1);
+          htmlKiri += `
+            <div class="flex items-center gap-2 text-xs">
+              <span class="w-28 truncate">${item.kecamatan}</span>
+              <div class="flex-1 bg-emerald-50 rounded">
+                <div class="h-3 rounded bg-emerald-700" style="width:${persenProduksi}%;"></div>
+              </div>
+              <span class="w-14 text-right">${item.produksi.toLocaleString("id-ID")}</span>
+            </div>
+          `;
 
-              htmlKiri += `
-                  <div class="flex items-center gap-2 text-xs">
-                      <span class="w-28 truncate">${item.kecamatan}</span>
-                      <div class="flex-1 bg-emerald-50 rounded">
-                          <div class="h-3 rounded bg-emerald-700" style="width:${persenProduksi}%;"></div>
-                      </div>
-                      <span class="w-14 text-right">${item.produksi.toLocaleString("id-ID")}</span>
-                  </div>
-              `;
+          htmlKanan += `
+            <div class="flex items-center gap-2 text-xs">
+              <span class="w-28 truncate">${item.kecamatan}</span>
+              <div class="flex-1 bg-amber-50 rounded">
+                <div class="h-3 rounded bg-amber-500" style="width:${persenLuas}%;"></div>
+              </div>
+              <span class="w-16 text-right">${item.luas_panen.toLocaleString("id-ID")}</span>
+            </div>
+          `;
+        });
 
-              htmlKanan += `
-                  <div class="flex items-center gap-2 text-xs">
-                      <span class="w-28 truncate">${item.kecamatan}</span>
-                      <div class="flex-1 bg-amber-50 rounded">
-                          <div class="h-3 rounded bg-amber-500" style="width:${persenLuas}%;"></div>
-                      </div>
-                      <span class="w-16 text-right">${item.luas_panen.toLocaleString("id-ID")}</span>
-                  </div>
-              `;
-          });
+        htmlKiri += `</div>`;
+        htmlKanan += `</div>`;
 
-          htmlKiri += `</div>`;
-          htmlKanan += `</div>`;
-
-          document.getElementById("chart-container").innerHTML = htmlKiri + htmlKanan;
+        document.getElementById("chart-container").innerHTML = htmlKiri + htmlKanan;
       }
-      
-      loadInfoByYear(document.getElementById('tahunSelect').value);
+
+      // Inisialisasi awal
+      const tahunAwal = document.getElementById('tahunSelect').value;
+      loadInfoByYear(tahunAwal);
       loadBarData();
+
+      // Event listener untuk perubahan tahun
       document.getElementById('tahunSelect').addEventListener('change', (e) => {
         loadInfoByYear(e.target.value);
+        loadBarData();
+      });
+
+      // Event listener untuk perubahan komoditas
+      document.getElementById('komoditasSelect').addEventListener('change', () => {
+        const tahun = document.getElementById('tahunSelect').value;
+        loadInfoByYear(tahun);
         loadBarData();
       });
 
@@ -364,7 +443,7 @@
       let chart;
 
       async function loadChartByKomoditas(komoditas) {
-        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/harvest/${komoditas}`);
+        const res = await fetch(`http://127.0.0.1:8000/api/home/harvest/${komoditas}`);
         const data = await res.json();
         console.log("API response:", data);
         const labels = data.map(d => d.Year);
@@ -378,12 +457,11 @@
           cassava: "Ketela Pohon", 
           peanuts: "Kacang Tanah",
           soybeans: "Kedelai",
-          g_beans: "Kacang Hijau",
+          g_beans: "Kacang Panjang",
           l_chilies: "Cabai Besar",
           cayenne: "Cabai Rawit",
           cabbage: "Kubis",
           tomatoes: "Tomat",
-          l_beans: "Kacang Panjang",
           cucumber: "Timun" 
         };
         document.getElementById("luas-panen-komoditas").textContent =
@@ -435,7 +513,7 @@
         }
       }
 
-      document.getElementById("komoditasSelect").addEventListener("change", (e) => {
+      document.getElementById("komoditiSelect").addEventListener("change", (e) => {
         loadChartByKomoditas(e.target.value);});
       loadChartByKomoditas("r_onions");
 
@@ -445,8 +523,8 @@
         if (!tahun) {
           tahun = document.getElementById("tahunSelect").value;
         }
-
-        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/info/${tahun}`);
+        const komoditasHarvest = document.getElementById("komoditasSelect").value;
+        const res = await fetch(`http://127.0.0.1:8000/api/home/info/${tahun}/${komoditasHarvest}`);
         const data = await res.json();
         const harvest = data.harvest;
 
@@ -463,7 +541,15 @@
           cassava: "Singkong",
           swpot: "Ubi Jalar",
           peanuts: "Kacang Tanah",
-          soybeans: "Kedelai"
+          soybeans: "Kedelai",
+          g_beans: "Kacang Hijau",
+          r_onions: "Bawang Merah",
+          l_chilies: "Cabai Besar",
+          cayenne: "Cabai Rawit",
+          cabbage: "Kubis",
+          tomatoes: "Tomat",
+          l_beans: "Kacang Panjang",
+          cucumber: "Timun"
         };
 
         const komoditas = Object.keys(harvest.by_region.north);
@@ -525,15 +611,22 @@
         });
       }
 
-      // Load awal (cukup sekali saja)
+      // Load awal
       document.addEventListener("DOMContentLoaded", () => {
         loadHarvestComparison();
 
-        // Event listener untuk dropdown
+        // Event listener untuk dropdown tahun
         document.getElementById("tahunSelect").addEventListener("change", (e) => {
           loadHarvestComparison(e.target.value);
         });
+
+        // Event listener untuk dropdown komoditas
+        document.getElementById("komoditasSelect").addEventListener("change", () => {
+          const tahun = document.getElementById("tahunSelect").value;
+          loadHarvestComparison(tahun);
+        });
       });
+
 
       let hortiChart = null; // simpan chart instance global
 
@@ -542,7 +635,7 @@
           tahun = document.getElementById("tahunSelect").value;
         }
 
-        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/horticulture/${tahun}`);
+        const res = await fetch(`http://127.0.0.1:8000/api/home/horticulture/${tahun}`);
         const data = await res.json();
         const harvest = data.harvest;
 
@@ -589,7 +682,7 @@
             labels: ["Wilayah Selatan", "Wilayah Utara"],
             datasets: datasets
           },
-          options: {
+          options: {  
             maintainAspectRatio: false,
             indexAxis: "y",
             responsive: true,
@@ -668,7 +761,7 @@
         const yKey  = elYScatter.value;
 
         try {
-          const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/scatter/${tahun}/${xKey}/${yKey}`);
+          const res = await fetch(`http://127.0.0.1:8000/api/home/scatter/${tahun}/${xKey}/${yKey}`);
           const raw = await res.json();
 
           // pisahkan berdasarkan wilayah
@@ -834,7 +927,7 @@ async function loadSpiderChart() {
   }
 
   try {
-    const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/spider/${tahun}/${kecamatanParam}/${komoditas}`);
+    const res = await fetch(`http://127.0.0.1:8000/api/home/spider/${tahun}/${kecamatanParam}/${komoditas}`);
     const raw = await res.json();
     console.log("Spider Chart Data:", raw);
 
@@ -862,6 +955,7 @@ async function loadSpiderChart() {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -876,7 +970,7 @@ async function loadSpiderChart() {
             grid: { color: "rgba(16, 185, 129, 0.15)" },
             pointLabels: {
               color: "#064e3b",
-              font: { size: 12 }
+              font: { size: 13 }
             },
             ticks: { display: false }
           }
