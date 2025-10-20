@@ -136,7 +136,7 @@
     <script>
         async function loadTabelPangan(musim = "Kemarau") {
             try {
-                const res = await fetch(`https://www.pythonanywhere.com/api/recommend/tanpang/${musim}`);
+                const res = await fetch(`https://agridash00.pythonanywhere.com/api/recommend/tanpang/${musim}`);
                 const json = await res.json();
                 const dataPangan = json.data;
 
@@ -174,7 +174,7 @@
 
         async function loadChartHorti(musim = "Kemarau") {
         try {
-            const res = await fetch(`https://www.pythonanywhere.com/api/recommend/horti/${musim}`);
+            const res = await fetch(`https://agridash00.pythonanywhere.com/api/recommend/horti/${musim}`);
             const json = await res.json();
 
             const ctxHorti = document.getElementById("chartHorti").getContext("2d");
