@@ -363,7 +363,7 @@
       async function loadInfoByYear(tahun) {
         try {
           const komoditas = document.getElementById("komoditasSelect").value;
-          const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/info/${tahun}/${komoditas}`);
+          const res = await fetch(`https://www.pythonanywhere.com/api/home/info/${tahun}/${komoditas}`);
           const data = await res.json();
 
           // Isi ke elemen HTML
@@ -381,7 +381,7 @@
       async function loadBarData() {
         const komoditas = document.getElementById("komoditasSelect").value;
         const tahun = document.getElementById("tahunSelect").value;
-        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/comparison/${tahun}/${komoditas}`);
+        const res = await fetch(`https://www.pythonanywhere.com/api/home/comparison/${tahun}/${komoditas}`);
         const data = await res.json();
 
         // Cari nilai maksimum untuk normalisasi panjang bar
@@ -444,7 +444,7 @@
       let chart;
 
       async function loadChartByKomoditas(komoditas) {
-        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/harvest/${komoditas}`);
+        const res = await fetch(`https://www.pythonanywhere.com/api/home/harvest/${komoditas}`);
         const data = await res.json();
         console.log("API response:", data);
         const labels = data.map(d => d.Year);
@@ -525,7 +525,7 @@
           tahun = document.getElementById("tahunSelect").value;
         }
         const komoditasHarvest = document.getElementById("komoditasSelect").value;
-        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/info/${tahun}/${komoditasHarvest}`);
+        const res = await fetch(`https://www.pythonanywhere.com/api/home/info/${tahun}/${komoditasHarvest}`);
         const data = await res.json();
         const harvest = data.harvest;
 
@@ -636,7 +636,7 @@
           tahun = document.getElementById("tahunSelect").value;
         }
 
-        const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/horticulture/${tahun}`);
+        const res = await fetch(`https://www.pythonanywhere.com/api/home/horticulture/${tahun}`);
         const data = await res.json();
         const harvest = data.harvest;
 
@@ -762,7 +762,7 @@
         const yKey  = elYScatter.value;
 
         try {
-          const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/scatter/${tahun}/${xKey}/${yKey}`);
+          const res = await fetch(`https://www.pythonanywhere.com/api/home/scatter/${tahun}/${xKey}/${yKey}`);
           const raw = await res.json();
 
           // pisahkan berdasarkan wilayah
@@ -928,7 +928,7 @@ async function loadSpiderChart() {
   }
 
   try {
-    const res = await fetch(`https://agridash00.pythonanywhere.com//api/home/spider/${tahun}/${kecamatanParam}/${komoditas}`);
+    const res = await fetch(`https://www.pythonanywhere.com/api/home/spider/${tahun}/${kecamatanParam}/${komoditas}`);
     const raw = await res.json();
     console.log("Spider Chart Data:", raw);
 
