@@ -146,7 +146,7 @@
     async function loadKomoditas(jenis) {
         try {
             const query = [...selectedKomoditas].map(k => `komoditas=${encodeURIComponent(k)}`).join("&");
-            const res = await fetch(`https://agridash00.pythonanywhere.com/api/predict/info/${jenis}?${query}`);
+            const res = await fetch(`https://agridash00.pythonanywhere.com//api/predict/info/${jenis}?${query}`);
             const json = await res.json();
             const data = json.data || [];
             const uniqueKomoditas = [...new Set(data.map(d => d.Komoditas))];
