@@ -5,8 +5,8 @@ import os
 router = APIRouter()
 
 # API sebelah kiri
-@router.get("/info/{tahun}")
-def get_chart_data(tahun: int):
+@router.get("/info/{tahun}/{komoditas}")
+def get_chart_data(tahun: int, komoditas: str):
     base_dir = os.path.dirname(os.path.abspath(__file__))  
     
     # ==== File sumber pertama ====
@@ -23,7 +23,16 @@ def get_chart_data(tahun: int):
     for col in df_harvest.columns[3:]:
         df_harvest[col] = pd.to_numeric(df_harvest[col], errors="coerce")
 
+    # === Definisi kelompok komoditas ===
     tanaman_pangan = ["rice", "corn", "cassava", "swpot", "peanuts", "soybeans"]
+    tanaman_horti = ["g_beans", "r_onions", "l_chilies", "cayenne", "cabbage", "cucumber", "tomatoes"]
+
+    if komoditas.lower() == "pangan":
+        selected_cols = tanaman_pangan
+    elif komoditas.lower() == "hortikultura":
+        selected_cols = tanaman_horti
+    else:
+        return {"error": "Komoditas harus 'pangan' atau 'hortikultura'"}
 
     # Filter berdasarkan tahun
     if "Year" not in df_pangan.columns or "Year" not in df_harvest.columns:
@@ -49,14 +58,15 @@ def get_chart_data(tahun: int):
         }
 
     summary = {
-        "harvest_production_pangan": process_df(df_pangan, tanaman_pangan),
-        "harvest": process_df(df_harvest, tanaman_pangan)}
+        "harvest_production": process_df(df_pangan, selected_cols),
+        "harvest": process_df(df_harvest, selected_cols)
+    }
 
     return summary
 
 # API sebelah kiri
-@router.get("/comparison/{tahun}")
-def get_chart_data(tahun: int):
+@router.get("/comparison/{tahun}/{komoditas}")
+def get_chart_data(tahun: int, komoditas: str):
     base_dir = os.path.dirname(os.path.abspath(__file__))  
     
     # ==== File sumber pertama ====
@@ -67,15 +77,26 @@ def get_chart_data(tahun: int):
     file_path_harvest = os.path.join(base_dir, "../../dataset/All/harvest.xlsx")
     df_harvest = pd.read_excel(file_path_harvest, sheet_name="harvest_area")
 
+    # ==== Definisi kelompok komoditas ====
+    pangan_cols = ["rice", "corn", "cassava", "swpot", "peanuts", "soybeans"]
+    horti_cols = ["g_beans", "r_onions", "l_chilies", "cayenne", "cabbage", "cucumber", "tomatoes"]
+
+    if komoditas.lower() == "pangan":
+        selected_cols = pangan_cols
+    elif komoditas.lower() == "hortikultura":
+        selected_cols = horti_cols
+    else:
+        return {"error": "Komoditas harus 'pangan' atau 'hortikultura'"}
+
     # Filter berdasarkan tahun
-    luas_df = df_pangan[df_pangan["Year"] == tahun]
-    prod_df = df_harvest[df_harvest["Year"] == tahun]
+    luas_df = df_pangan[df_pangan["Year"] == tahun].copy()
+    prod_df = df_harvest[df_harvest["Year"] == tahun].copy()
 
     # Hitung total luas panen per kecamatan
-    luas_df["total_luas"] = luas_df[["rice", "corn", "cassava", "swpot", "peanuts", "soybeans"]].sum(axis=1)
+    luas_df["total_luas"] = luas_df[selected_cols].sum(axis=1)
 
     # Hitung total produksi per kecamatan
-    prod_df["total_produksi"] = prod_df[["rice", "corn", "cassava", "swpot", "peanuts", "soybeans"]].sum(axis=1)
+    prod_df["total_produksi"] = prod_df[selected_cols].sum(axis=1)
 
     # Gabungkan data berdasarkan kecamatan/district
     merged = pd.merge(
@@ -118,7 +139,6 @@ def get_harvest_data(komoditas: str):
         "cayenne": "cayenne",
         "cabbage": "cabbage",
         "tomatoes": "tomatoes",
-        "l_beans": "l_beans",
         "cucumber": "cucumber"
     }
 
@@ -146,7 +166,7 @@ def get_chart_data(tahun: int):
     for col in df_harvest.columns[3:]:
         df_harvest[col] = pd.to_numeric(df_harvest[col], errors="coerce")
 
-    tanaman_holtikultura = ["g_beans","r_onions","l_chilies","cayenne","cabbage","tomatoes","l_beans","cucumber"]
+    tanaman_holtikultura = ["g_beans","r_onions","l_chilies","cayenne","cabbage","tomatoes","cucumber"]
 
     if "Year" not in df_harvest.columns:
         return {"error": "Kolom 'Year' tidak ditemukan di salah satu file Excel."}

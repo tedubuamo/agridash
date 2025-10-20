@@ -220,71 +220,26 @@ def get_info(tahun: int):
 
     return JSONResponse(content=geojson_data)
 
-@router.get("/centroid_prod/{tahun}")
-def get_info(tahun: int):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    excel_path = os.path.join(base_dir, "hasil_cluster_final.xlsx")
-
-    try:
-        df = pd.read_excel(excel_path, sheet_name="Centroid_best", engine="openpyxl")
-    except FileNotFoundError:
-        return JSONResponse(content={"error": "File Excel tidak ditemukan"}, status_code=404)
-
-    df_filtered = df[
-        (df["Tahun"] == tahun) &
-        (df["kinerja"].str.lower() == "produksi") &
-        (df["jenis"].str.lower() == "tanaman pangan")
-    ].copy()
-
-    df_filtered = df_filtered.drop(columns=["n_members","centroid__bawang merah","centroid__cabai besar","centroid__cabai rawit","centroid__kacang panjang","centroid__ketimun","centroid__kubis",
-                                            "centroid__tomat","centroid__bayam","centroid__cabai","centroid__sawi","centroid__ubi jalar"], errors="ignore")
-    df_filtered = df_filtered.replace([np.inf, -np.inf,np.nan], 0)
-    df_filtered = df_filtered.where(pd.notnull(df_filtered), None).round(0)
-    result = df_filtered.to_dict(orient="records")
-
+@router.get("/centroid_prod")
+def get_info():
+    df = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), "final_dataset.xlsx"), sheet_name="Centroids_Produksi", engine="openpyxl")
+    komoditas_cols = [c for c in df.columns if c.lower() != "cluster"]
+    result = []
+    for _, r in df.iterrows():
+        result.append({
+            "Cluster": int(r["Cluster"]),
+            "Komoditas": {c.replace("Produksi ",""): int(round(r[c])) for c in komoditas_cols}
+        })
     return JSONResponse(content=result)
 
-@router.get("/centroid_wide/{tahun}")
-def get_info(tahun: int):
-    import numpy as np
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    excel_path = os.path.join(base_dir, "hasil_cluster_final.xlsx")
-
-    try:
-        df = pd.read_excel(excel_path, sheet_name="Centroid_best", engine="openpyxl")
-    except FileNotFoundError:
-        return JSONResponse(content={"error": "File Excel tidak ditemukan"}, status_code=404)
-
-    # Filter data sesuai tahun dan jenis yang relevan
-    df_filtered = df[
-        (df["Tahun"] == tahun) &
-        (df["kinerja"].str.lower() == "luas lahan panen") &
-        (df["jenis"].str.lower().isin(["tanaman pangan", "hortikultura"])) &
-        (df["metode"].str.lower() != "k-means")
-    ].copy()
-
-    # Drop kolom yang tidak relevan
-    df_filtered = df_filtered.drop(columns=[
-        "n_members", "centroid__bayam", "centroid__cabai", "centroid__sawi", "centroid__ubi jalar"
-    ], errors="ignore")
-
-    # Bersihkan nilai ekstrem dan kosong
-    df_filtered = df_filtered.replace([np.inf, -np.inf, np.nan], 0)
-
-    # Gabungkan berdasarkan cluster
-    numeric_cols = [col for col in df_filtered.columns if col.startswith("centroid__")]
-    grouped = df_filtered.groupby("cluster")[numeric_cols].sum().reset_index()
-
-    # Tambahkan kembali kolom Tahun, kinerja, jenis, metode (ambil dari baris pertama per cluster)
-    meta_cols = ["Tahun", "kinerja", "jenis", "metode"]
-    meta_info = df_filtered.groupby("cluster")[meta_cols].first().reset_index()
-
-    # Gabungkan metadata dan hasil agregasi
-    merged = pd.merge(meta_info, grouped, on="cluster")
-
-    # Final cleaning
-    merged = merged.round(0)
-    result = merged.to_dict(orient="records")
-
+@router.get("/centroid_wide")
+def get_info():
+    df = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), "final_dataset.xlsx"), sheet_name="Centroids_LLP", engine="openpyxl")
+    komoditas_cols = [c for c in df.columns if c.lower() != "cluster"]
+    result = []
+    for _, r in df.iterrows():
+        result.append({
+            "Cluster": int(r["Cluster"]),
+            "Komoditas": {c.replace("LLP ",""): int(round(r[c])) for c in komoditas_cols}
+        })
     return JSONResponse(content=result)
-
