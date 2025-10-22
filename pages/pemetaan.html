@@ -109,21 +109,19 @@
             <div class="col-span-4 bg-white border border-emerald-200 rounded-lg p-3 text-sm">
             <h3 class="font-bold text-center mb-2">- Dominasi Produksi -</h3>
             <div class="flex flex-wrap gap-3 justify-center">
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#a1d99b]"></span>Cluster 0</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#ffeda0]"></span>Cluster 1</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#fc9272]"></span>Cluster 2</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#de2d26]"></span>Cluster 3</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#a1d99b]"></span>Padi, Cabai Rawit, Jagung</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#ffeda0]"></span>Padi, Cabai Rawit, Jagung, Ketela Pohon, Cabai Besar, Kedelai</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#fc9272]"></span>Cabai Besar, Jagung, Tomat, Ketimun</div>
             </div>
             </div>
 
             <!-- Legend Lahan Panen -->
             <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-3 text-sm">
             <h3 class="font-bold text-center mb-2">- Dominasi Luas Lahan Panen -</h3>
-            <div class="flex flex-wrap gap-3 justify-center">
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#a1d99b]"></span>Cluster 0</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#ffeda0]"></span>Cluster 1</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#fc9272]"></span>Cluster 2</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#de2d26]"></span>Cluster 3</div>
+            <div class="flex flex-col space-y-2 items-center">
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#a1d99b]"></span>Padi, Jagung, Kacang Tanah</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#ffeda0]"></span>Jagung, Kedelai, Cabai Rawit, Ketela Pohon</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-[#fc9272]"></span>Padi</div>
             </div>
             </div>
         </div>
@@ -131,7 +129,7 @@
         <!-- 🔹 Baris tengah: 2 Peta -->
         <div class="grid grid-cols-12 gap-4">
             <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-4">
-            <h2 class="text-center font-bold text-emerald-800 mb-2">Produksi Tanaman Pangan</h2>
+            <h2 class="text-center font-bold text-emerald-800 mb-2">Produksi Tanaman Pangan & Hortikultura</h2>
             <div id="mapProduksi" class="h-[400px]"></div>
             </div>
             <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-4">
@@ -144,7 +142,7 @@
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-6 bg-white border border-emerald-200 rounded-lg p-3">
             <h3 class="text-center font-bold text-emerald-800 mb-2">
-              Centroid Produksi Tanaman Pangan
+              Centroid Produksi Tanaman Pangan & Hortikultura
             </h3>
             <div class="overflow-x-auto">
               <table class="w-full text-sm border min-w-[2000px] table-fixed">
@@ -186,120 +184,101 @@
 </div>
 
 <script>
-    const map = L.map('mapProduksi').setView([-7.5, 112], 11);
-    L.tileLayer('').addTo(map);
+const map = L.map('mapProduksi').setView([-7.5, 112], 11);
 
-    const tahunSelect = document.getElementById('tahunSelect');
-    let geojsonLayer;
+let geojsonLayerProduksi;
 
-    function getColorByLabel(label) {
-      switch (label) {
-        case 0: return '#a1d99b';
-        case 1: return '#ffeda0';
-        case 2: return '#fc9272';
-        case 3: return '#de2d26';
-        default: return '#cccccc';
-      }
-    }
+function getColorByCluster(cluster) {
+  switch (cluster) {
+    case 0: return '#a1d99b';
+    case 1: return '#ffeda0';
+    case 2: return '#fc9272';
+    default: return '#cccccc';
+  }
+}
 
-    function loadMapData(tahun) {
-      fetch(`https://agridash00.pythonanywhere.com/api/mapping/maps_prod/${tahun}`)
-        .then(res => res.json())
-        .then(data => {
-          if (geojsonLayer) {
-            map.removeLayer(geojsonLayer);
-          }
-          geojsonLayer = L.geoJSON(data, {
-            style: function (feature) {
-              const labelValue = feature.properties.label;
-              return {
-                color: '#1f6b3a',
-                weight: 1,
-                fillColor: getColorByLabel(labelValue),
-                fillOpacity: 1
-              };
-            },
-            onEachFeature: function (feature, layer) {
-              layer.bindPopup(
-                `<b>${feature.properties.nm_kecamatan}</b><br>` +
-                `Metode: ${feature.properties.metode}<br>` +
-                `Cluster: ${feature.properties.cluster}<br>` +
-                `Komoditas Dominan: ${feature.properties.komoditas_dominan}`
-              );
-            }
-          }).addTo(map);
-          try {
-            map.fitBounds(geojsonLayer.getBounds());
-          } catch (e) {}
-        })
-        .catch(err => console.error(err));
-    }
-
-    loadMapData(tahunSelect.value);
-    tahunSelect.addEventListener('change', function () {
-      loadMapData(this.value);
+function loadMapProduksi(tahun) {
+  fetch(`https://agridash00.pythonanywhere.com/api/mapping/maps_prod/${tahun}`)
+    .then(res => res.json())
+    .then(data => {
+      if (geojsonLayerProduksi) map.removeLayer(geojsonLayerProduksi);
+      geojsonLayerProduksi = L.geoJSON(data, {
+        style: f => ({
+          color: '#1f6b3a',
+          weight: 1,
+          fillColor: getColorByCluster(f.properties.cluster_Prod),
+          fillOpacity: 0.8
+        }),
+        onEachFeature: (f, layer) => {
+          const p = f.properties;
+          layer.bindPopup(
+            `<b>${p.nm_kecamatan}</b><br>` +
+            `Tahun: ${p.Tahun}<br>` +
+            `Cluster Produksi: ${p.cluster_Prod}<br>` +
+            `Total Produksi: ${p.total_produksi.toLocaleString()}`
+          );
+        }
+      }).addTo(map);
+      try { map.fitBounds(geojsonLayerProduksi.getBounds()); } catch {}
     });
+}
+</script>
+
+<script>
+const mapLahan = L.map('mapLahan').setView([-7.5, 112], 9);
+
+let geojsonLayerLahan;
+
+function getColorByClusterLLP(cluster) {
+  switch (cluster) {
+    case 0: return '#a1d99b'; // hijau muda
+    case 1: return '#ffeda0'; // kuning muda
+    case 2: return '#fc9272'; // merah muda
+    default: return '#cccccc'; // abu-abu
+  }
+}
+
+function loadMapLahan(tahun) {
+  fetch(`https://agridash00.pythonanywhere.com/api/mapping/wide_prod/${tahun}`)
+    .then(res => res.json())
+    .then(data => {
+      if (geojsonLayerLahan) mapLahan.removeLayer(geojsonLayerLahan);
+      geojsonLayerLahan = L.geoJSON(data, {
+        style: f => ({
+          color: '#1f6b3a',
+          weight: 1,
+          fillColor: getColorByClusterLLP(f.properties.cluster_LLP),
+          fillOpacity: 0.8
+        }),
+        onEachFeature: (f, layer) => {
+          const p = f.properties;
+          layer.bindPopup(
+            `<b>${p.nm_kecamatan}</b><br>` +
+            `Tahun: ${p.Tahun}<br>` +
+            `Cluster LLP: ${p.cluster_LLP}<br>` +
+            `Total LLP: ${p.total_LLP.toLocaleString()}`
+          );
+        }
+      }).addTo(mapLahan);
+      try { mapLahan.fitBounds(geojsonLayerLahan.getBounds()); } catch {}
+    });
+}
 </script>
 
 
 <script>
-  const mapLahan = L.map('mapLahan').setView([-7.5, 112], 9);
-  L.tileLayer('').addTo(mapLahan);
+// ✅ Satu dropdown untuk keduanya
+const tahunSelect = document.getElementById('tahunSelect');
 
-  const tahunSelectLahan = document.getElementById('tahunSelect');
-  let geojsonLayerLahan;
+// Load awal
+loadMapProduksi(tahunSelect.value);
+loadMapLahan(tahunSelect.value);
 
-  function getColorByLabel(label) {
-    switch (label) {
-      case 0: return '#a1d99b'; // hijau muda
-      case 1: return '#ffeda0'; // kuning
-      case 2: return '#fc9272'; // merah muda
-      case 3: return '#de2d26'; // merah tua
-      default: return '#cccccc'; // abu-abu default
-    }
-  }
-
-  function loadMapData(tahun) {
-    fetch(`https://agridash00.pythonanywhere.com/api/mapping/wide_prod/${tahun}`)
-      .then(res => res.json())
-      .then(data => {
-        if (geojsonLayerLahan) {
-          mapLahan.removeLayer(geojsonLayerLahan);
-        }
-
-        geojsonLayerLahan = L.geoJSON(data, {
-          style: function (feature) {
-            const labelValue = feature.properties.label;
-            return {
-              color: '#1f6b3a',
-              weight: 1,
-              fillColor: getColorByLabel(labelValue),
-              fillOpacity: 1
-            };
-          },
-          onEachFeature: function (feature, layer) {
-            layer.bindPopup(
-              `<b>${feature.properties.nm_kecamatan}</b><br>` +
-              `Metode: ${feature.properties.metode}<br>` +
-              `Cluster: ${feature.properties.cluster}<br>` +
-              `Komoditas Dominan: ${feature.properties.komoditas_dominan}`
-            );
-          }
-        }).addTo(mapLahan);
-
-        try {
-          mapLahan.fitBounds(geojsonLayerLahan.getBounds());
-        } catch (e) {
-          console.warn("Tidak bisa fitBounds, mungkin data kosong");
-        }
-      })
-      .catch(err => console.error('Gagal memuat GeoJSON:', err));
-  }
-
-  loadMapData(tahunSelectLahan.value);
-  tahunSelectLahan.addEventListener('change', function () {
-    loadMapData(this.value);
-  });
+// Event listener sekali saja
+tahunSelect.addEventListener('change', function () {
+  loadMapProduksi(this.value);
+  loadMapLahan(this.value);
+});
 </script>
 
 <script>
@@ -318,20 +297,25 @@
           return;
         }
 
-        // Ambil nama komoditas dari object Komoditas cluster pertama
         const keys = Object.keys(data[0].Komoditas);
 
-        // Buat header tabel
+        const clusterLabels = {
+          0: `Padi, Cabai Rawit, Jagung`,
+          1: `Padi, Cabai Rawit, Jagung, </br> Ketela Pohon, Cabai Besar, Kedelai`,
+          2: `Cabai Besar, Jagung, Tomat, Ketimun`
+        };
+
+        // Header tabel
         thead.innerHTML =
-          `<th class="text-center px-4 py-2 whitespace-nowrap">Cluster</th>` +
-          keys.map(k => `<th class="text-center px-0 py-2 whitespace-nowrap">${k}</th>`).join("");
+          `<th class="text-center px-4 py-2 whitespace-nowrap min-w-[220px]">Cluster</th>` +
+          keys.map(k => `<th class="text-center px-4 py-2 whitespace-nowrap">${k}</th>`).join("");
 
         // Isi baris data
         data.forEach(row => {
           const tr = document.createElement("tr");
-          let cols = `<td class="text-center px-4 py-2 whitespace-nowrap">${row.Cluster}</td>`;
+          let cols = `<td class="text-xs px-2 py-2 pr-4 whitespace-normal min-w-[220px]">${clusterLabels[row.Cluster] || row.Cluster}</td>`;
           keys.forEach(k => {
-            cols += `<td class="text-center px-4 py-2 whitespace-nowrap">${row.Komoditas[k] ?? "-"}</td>`;
+            cols += `<td class="text-xs text-center px-2 py-2 whitespace-nowrap">${row.Komoditas[k] ?? "-"}</td>`;
           });
           tr.innerHTML = cols;
           tbody.appendChild(tr);
@@ -340,7 +324,6 @@
       .catch(err => console.error("Gagal memuat data centroid:", err));
   }
 
-  // Load awal
   loadCentroidData();
 </script>
 
@@ -362,15 +345,24 @@
 
         const keys = Object.keys(data[0].Komoditas);
 
-        thead.innerHTML =
-          `<th class="text-center px-4 py-2 whitespace-nowrap">Cluster</th>` +
-          keys.map(k => `<th class="text-center px-0 py-2 whitespace-nowrap">${k}</th>`).join("");
+        // Mapping cluster → label custom
+        const clusterLabels = {
+          0: `Padi, Jagung, Kacang Tanah`,
+          1: `Jagung, Kedelai, Cabai Rawit, Ketela Pohon`,
+          2: `Padi`
+        };
 
+        // Header tabel
+        thead.innerHTML =
+          `<th class="text-center px-4 py-2 whitespace-nowrap min-w-[220px]">Cluster</th>` +
+          keys.map(k => `<th class="text-center px-4 py-2 whitespace-nowrap">${k}</th>`).join("");
+
+        // Isi baris data
         data.forEach(row => {
           const tr = document.createElement("tr");
-          let cols = `<td class="text-center px-4 py-2 whitespace-nowrap">${row.Cluster}</td>`;
+          let cols = `<td class="text-xs px-2 py-4 pr-4 whitespace-normal min-w-[220px]">${clusterLabels[row.Cluster] || row.Cluster}</td>`;
           keys.forEach(k => {
-            cols += `<td class="text-center px-4 py-2 whitespace-nowrap">${row.Komoditas[k] ?? "-"}</td>`;
+            cols += `<td class="text-xs text-center px-4 py-2 whitespace-nowrap">${row.Komoditas[k] ?? "-"}</td>`;
           });
           tr.innerHTML = cols;
           tbody.appendChild(tr);
@@ -379,10 +371,8 @@
       .catch(err => console.error("Gagal memuat data centroid:", err));
   }
 
-  // Load awal
   loadLebarData();
 </script>
-
 
 <script>
   function logout() {
